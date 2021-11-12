@@ -1,0 +1,28 @@
+name: BuildHarmoneyOS
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+  release:
+    types: released
+
+jobs:
+  build:
+    name: Build
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Build x86 Release
+        shell: pwsh
+        run: |
+          .\Build.ps1 x86
+
+      - name: Build x64 Release
+        shell: pwsh
+        run: |
+          .\Build.ps1 x64
