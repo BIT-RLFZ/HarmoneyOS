@@ -158,6 +158,7 @@
     <ClInclude Include="CPurchaseOrderRecord.h" />
     <ClInclude Include="Database.h" />
     <ClInclude Include="ItemManager.h" />
+    <ClInclude Include="NoImplException.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

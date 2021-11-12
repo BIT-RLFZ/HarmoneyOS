@@ -68,5 +68,8 @@
     <ClInclude Include="CashierSystem.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="NoImplException.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
