@@ -1,5 +1,9 @@
 #include "Database.h"
 #include "NoImplException.h";
+bool Database::InitDatabase(std::string dbFileName)
+{
+    throw NoImplException(__FUNCTION__);
+}
 CItemStorageInfo Database::QueryItemStorageInfo(std::string ItemId)
 {
     throw NoImplException(__FUNCTION__);

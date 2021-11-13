@@ -8,6 +8,11 @@ class Database
 {
 public:
 	/*
+		初始化数据库，读入数据库文件数据并解析
+		文件不存在时会自动初始化一个新的数据库文件
+	*/
+	bool InitDatabase(std::string dbFileName="Harmoney.osdb");
+	/*
 		查询指定ItemId商品的商品信息，返回类CItemStorageInfo
 		可能异常：HarmoneyException
 			 在：无法找到指定商品ID时

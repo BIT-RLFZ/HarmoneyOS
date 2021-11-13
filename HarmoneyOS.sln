@@ -5,6 +5,8 @@ VisualStudioVersion = 16.0.31624.102
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HarmoneyOS", "HarmoneyOS\HarmoneyOS.vcxproj", "{8C8F450E-2A3C-4A06-B2AC-9D01A1500EC0}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HarmoneyOSTest", "HarmoneyOSTest\HarmoneyOSTest.vcxproj", "{1031E919-192F-499B-A933-23493FC7A73B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -21,6 +23,14 @@ Global
 		{8C8F450E-2A3C-4A06-B2AC-9D01A1500EC0}.Release|x64.Build.0 = Release|x64
 		{8C8F450E-2A3C-4A06-B2AC-9D01A1500EC0}.Release|x86.ActiveCfg = Release|Win32
 		{8C8F450E-2A3C-4A06-B2AC-9D01A1500EC0}.Release|x86.Build.0 = Release|Win32
+		{1031E919-192F-499B-A933-23493FC7A73B}.Debug|x64.ActiveCfg = Debug|x64
+		{1031E919-192F-499B-A933-23493FC7A73B}.Debug|x64.Build.0 = Debug|x64
+		{1031E919-192F-499B-A933-23493FC7A73B}.Debug|x86.ActiveCfg = Debug|Win32
+		{1031E919-192F-499B-A933-23493FC7A73B}.Debug|x86.Build.0 = Debug|Win32
+		{1031E919-192F-499B-A933-23493FC7A73B}.Release|x64.ActiveCfg = Release|x64
+		{1031E919-192F-499B-A933-23493FC7A73B}.Release|x64.Build.0 = Release|x64
+		{1031E919-192F-499B-A933-23493FC7A73B}.Release|x86.ActiveCfg = Release|Win32
+		{1031E919-192F-499B-A933-23493FC7A73B}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
