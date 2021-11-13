@@ -14,5 +14,15 @@ public:
 	double Price; //售价
 	std::string ItemId;
 	int ItemType; //0:按个数卖 1:称重
+	/*
+		无参构造
+		为基本数据类型初始化
+	*/
+	CItemInfo();
+	/*
+		有参构造
+		为各个成员赋初始值
+	*/
+	CItemInfo(const std::string& ItemName, double Cost, double Price, const std::string& ItemId, int ItemType);
 };
 
