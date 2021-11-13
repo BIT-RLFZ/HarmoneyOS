@@ -111,7 +111,7 @@ namespace HarmoneyOSTest
 						ret.Timestamp = time(0);
 						ret.WeightRest = 0;
 					}
-					else {
+					else if (item.ItemType == 1) {
 						// °´½ï
 						ret.CountRest = 0;
 						ret.IsDelete = false;
@@ -128,10 +128,47 @@ namespace HarmoneyOSTest
 					status = database.AddItemStorageInfo(ret);
 					if (!status) Assert::Fail();
 					auto dataRes = database.QueryItemStorageInfo(ret.Item.ItemId);
-					if(dataRes.Item.Cost != newCost) Assert::Fail();
+					if (dataRes.Item.Cost != newCost) Assert::Fail();
 					if (dataRes.Item.Price != newPrice) Assert::Fail();
-					if(dataRes.Item.ItemType == 0 && dataRes.CountRest != ret.CountRest * 2) Assert::Fail();
+					if (dataRes.Item.ItemType == 0 && dataRes.CountRest != ret.CountRest * 2) Assert::Fail();
 					if (dataRes.Item.ItemType == 1 && dataRes.WeightRest != ret.WeightRest * 2) Assert::Fail();
+				}
+				auto allStorageInfo = database.GetAllItemStorageInfo();
+				if (allStorageInfo.size() != items.size()) Assert::Fail();
+			}
+			catch (NoImplException ex) {
+				Logger::WriteMessage((ex.GetFunctionName() + "() throw NoImplException! (ignore)\n").c_str());
+			}
+			catch (HarmoneyException ex) {
+				Logger::WriteMessage("[Database_Test] Test Failed!\n");
+				Logger::WriteMessage(ex.GetMessage().c_str());
+				Assert::Fail();
+			}
+		}
+
+		TEST_METHOD(ModifyItemStorageInfoTest) {
+			try {
+				for (int i = 0; i < items.size(); i++) {
+					auto item = items[i];
+					auto itemInDB = database.QueryItemStorageInfo(item.ItemId);
+					if (itemInDB.Item.ItemType == 0) {
+						itemInDB.CountRest -= 3;
+						itemInDB.Timestamp = time(0);
+						auto sta = database.ModifyItemStorageInfo(itemInDB);
+						if (!sta) Assert::Fail();
+						auto nowItemInDB = database.QueryItemStorageInfo(item.ItemId);
+						if (nowItemInDB.CountRest != itemInDB.CountRest) Assert::Fail();
+						if (nowItemInDB.Timestamp != itemInDB.Timestamp) Assert::Fail();
+					}
+					else if (itemInDB.Item.ItemType == 1) {
+						itemInDB.WeightRest -= 4;
+						itemInDB.Timestamp = time(0);
+						auto sta = database.ModifyItemStorageInfo(itemInDB);
+						if (!sta) Assert::Fail();
+						auto nowItemInDB = database.QueryItemStorageInfo(item.ItemId);
+						if (nowItemInDB.WeightRest != itemInDB.WeightRest) Assert::Fail();
+						if (nowItemInDB.Timestamp != itemInDB.Timestamp) Assert::Fail();
+					}
 				}
 			}
 			catch (NoImplException ex) {

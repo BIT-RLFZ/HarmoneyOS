@@ -30,6 +30,7 @@ public:
 	bool AddItemStorageInfo(CItemStorageInfo& StorageInfo);
 	/*
 		查询数据库中所有的商品库存信息，返回商品信息的列表
+		注意！！！，已经下架(删除)的物品依然会返回，注意判断 IsDelete
 	*/
 	std::vector<CItemStorageInfo>& GetAllItemStorageInfo();
 	/*
