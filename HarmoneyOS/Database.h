@@ -66,5 +66,7 @@ public:
 		查询数据库中所有的订单记录
 	*/
 	std::vector<CPurchaseOrderRecord>& GetAllPurchaseOrderRecord();
+private:
+
 };
 
