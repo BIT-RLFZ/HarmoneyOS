@@ -38,7 +38,7 @@ public:
 		可能异常：HarmoneyException
 			 在：无法找到指定商品ID时
 	*/
-	bool DeleteItemStorageInfo(CItemStorageInfo& StorageInfo);
+	bool DeleteItemStorageInfo(std::string ItemId);
 
 	/*
 		添加一个商品的购买记录，注意同一个订单中可能会生成多个商品购买记录，因为可能有多个商品被购买

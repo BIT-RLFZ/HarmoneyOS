@@ -180,5 +180,24 @@ namespace HarmoneyOSTest
 				Assert::Fail();
 			}
 		}
+
+		TEST_METHOD(DeleteItemStorageInfoTest) {
+			try {
+				for (int i = 0; i < items.size(); i++) {
+					auto item = items[i];
+					database.DeleteItemStorageInfo(item.ItemId);
+					auto itemInDB = database.QueryItemStorageInfo(item.ItemId);
+					if (!itemInDB.IsDelete) Assert::Fail();
+				}
+			}
+			catch (NoImplException ex) {
+				Logger::WriteMessage((ex.GetFunctionName() + "() throw NoImplException! (ignore)\n").c_str());
+			}
+			catch (HarmoneyException ex) {
+				Logger::WriteMessage("[Database_Test] Test Failed!\n");
+				Logger::WriteMessage(ex.GetMessage().c_str());
+				Assert::Fail();
+			}
+		}
 	};
 }
