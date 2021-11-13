@@ -52,7 +52,7 @@ namespace HarmoneyOSTest
 			}
 			catch (HarmoneyException ex) {
 				Logger::WriteMessage("[Database_Test] Test Failed!\n");
-				Logger::WriteMessage(ex.GetMessage().c_str());
+				Logger::WriteMessage(("[Exception] " + ex.GetMessage()).c_str());
 				Assert::Fail();
 			}
 		}
@@ -142,7 +142,7 @@ namespace HarmoneyOSTest
 			}
 			catch (HarmoneyException ex) {
 				Logger::WriteMessage("[Database_Test] Test Failed!\n");
-				Logger::WriteMessage(ex.GetMessage().c_str());
+				Logger::WriteMessage(("[Exception] " + ex.GetMessage()).c_str());
 				Assert::Fail();
 			}
 		}
@@ -177,7 +177,7 @@ namespace HarmoneyOSTest
 			}
 			catch (HarmoneyException ex) {
 				Logger::WriteMessage("[Database_Test] Test Failed!\n");
-				Logger::WriteMessage(ex.GetMessage().c_str());
+				Logger::WriteMessage(("[Exception] " + ex.GetMessage()).c_str());
 				Assert::Fail();
 			}
 		}
@@ -196,7 +196,7 @@ namespace HarmoneyOSTest
 			}
 			catch (HarmoneyException ex) {
 				Logger::WriteMessage("[Database_Test] Test Failed!\n");
-				Logger::WriteMessage(ex.GetMessage().c_str());
+				Logger::WriteMessage(("[Exception] " + ex.GetMessage()).c_str());
 				Assert::Fail();
 			}
 		}

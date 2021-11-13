@@ -2,11 +2,74 @@
 #include "CItemStorageInfo.h"
 #include "CPurchaseItemRecord.h"
 #include "CPurchaseOrderRecord.h"
+#include "HarmoneyException.h"
+#include "NoImplException.h";
 #include <string>
 #include <vector>
+#include <fstream>
+#include <map>
+#include <set>
+
+/*
+	数据库文件结构: designed by RBH
+
+	=== Header ===
+
+	=== StringPool ===
+
+	=== AbstractItemInfoPool ===
+
+	=== AbstractItemStorageInfoPool ===
+
+	=== AbstractPurchaseItemRecordPool ===
+
+	=== AbstractPurchaseOrderRecord ===
+*/
+struct DatabaseHeader {
+	char magicChar[11]; //HarmoneyDB
+	int timestamp; //数据库最后更新时间
+	int StringPoolOffset; //字符串池的文件偏移
+	int StringPoolLength; //字符串池的长度
+	int AItemInfoPoolOffset;
+	int AItemInfoCount;
+	int AItemStorageInfoPoolOffset;
+	int AItemStorageInfoCount;
+	int APurchaseItemRecordPoolOffset;
+	int APurchaseItemRecordCount;
+	int APurchaseOrderRecordOffset;
+	int APurchaseOrderRecordCount;
+};
+struct AbstractString {
+	int SPOffset; // StringPoolOffset
+	int length; // string length
+};
+struct AbstractItemInfo {
+	int ItemDatabaseID; // 在数据库存储时分配的UID
+	AbstractString ItemName; // Get From StringPool
+	AbstractString ItemId; // Get From StringPool
+	double Cost;
+	double Price;
+	int ItemType;
+};
+struct AbstractItemStorageInfo {
+	int Item; // 查ItemInfo表，找到ItemDatabaseID为Item的项目即为此项
+	double WeightRest;
+	int CountRest;
+	int Timestamp; //录入时间
+	bool IsDelete;
+};
+
 class Database
 {
 public:
+	Database() {
+		gFileHeader = NULL;
+		gFileData = NULL;
+		gStringPool = NULL;
+	}
+	~Database() {
+		if (gFileData) delete gFileData;
+	}
 	/*
 		初始化数据库，读入数据库文件数据并解析
 		文件不存在时会自动初始化一个新的数据库文件
@@ -67,6 +130,15 @@ public:
 	*/
 	std::vector<CPurchaseOrderRecord>& GetAllPurchaseOrderRecord();
 private:
+	char* gFileData;
+	char* gStringPool;
+	DatabaseHeader* gFileHeader;
+	std::set<std::string> GlobalString;
+	std::map<std::string, AbstractString> stringMap;
+	void GenerateEmptyDBFile(std::string dbFileName);
+	std::string GetAbstractString(const AbstractString& as);
+	void LoadBinaryDBFile(std::string dbFileName);
 
+	
 };
 
