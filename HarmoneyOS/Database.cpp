@@ -24,7 +24,7 @@ std::vector<CItemStorageInfo>& Database::GetAllItemStorageInfo()
     throw NoImplException(__FUNCTION__);
 }
 
-bool Database::DeleteItemStorageInfo(CItemStorageInfo& StorageInfo)
+bool Database::DeleteItemStorageInfo(std::string ItemId)
 {
     throw NoImplException(__FUNCTION__);
 }
