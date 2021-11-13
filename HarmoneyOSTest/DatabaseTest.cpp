@@ -52,7 +52,7 @@ namespace HarmoneyOSTest
 			}
 			catch (HarmoneyException ex) {
 				Logger::WriteMessage("[Database_Test] Test Failed!\n");
-				Logger::WriteMessage(ex.GetMessage().c_str());
+				Logger::WriteMessage(("[Exception] " + ex.GetMessage()).c_str());
 				Assert::Fail();
 			}
 		}
@@ -128,6 +128,7 @@ namespace HarmoneyOSTest
 					status = database.AddItemStorageInfo(ret);
 					if (!status) Assert::Fail();
 					auto dataRes = database.QueryItemStorageInfo(ret.Item.ItemId);
+					if (dataRes.Item.ItemName != item.ItemName) Assert::Fail();
 					if (dataRes.Item.Cost != newCost) Assert::Fail();
 					if (dataRes.Item.Price != newPrice) Assert::Fail();
 					if (dataRes.Item.ItemType == 0 && dataRes.CountRest != ret.CountRest * 2) Assert::Fail();
@@ -141,7 +142,7 @@ namespace HarmoneyOSTest
 			}
 			catch (HarmoneyException ex) {
 				Logger::WriteMessage("[Database_Test] Test Failed!\n");
-				Logger::WriteMessage(ex.GetMessage().c_str());
+				Logger::WriteMessage(("[Exception] " + ex.GetMessage()).c_str());
 				Assert::Fail();
 			}
 		}
@@ -176,7 +177,7 @@ namespace HarmoneyOSTest
 			}
 			catch (HarmoneyException ex) {
 				Logger::WriteMessage("[Database_Test] Test Failed!\n");
-				Logger::WriteMessage(ex.GetMessage().c_str());
+				Logger::WriteMessage(("[Exception] " + ex.GetMessage()).c_str());
 				Assert::Fail();
 			}
 		}
@@ -195,7 +196,7 @@ namespace HarmoneyOSTest
 			}
 			catch (HarmoneyException ex) {
 				Logger::WriteMessage("[Database_Test] Test Failed!\n");
-				Logger::WriteMessage(ex.GetMessage().c_str());
+				Logger::WriteMessage(("[Exception] " + ex.GetMessage()).c_str());
 				Assert::Fail();
 			}
 		}
