@@ -9,9 +9,32 @@
 
 using namespace std;
 
+void AddItem(string itemName, int count, string itemID) {
+    CItemStorageInfo info;
+    info.Item.ItemType = 0;
+    info.Item.Cost = 123;
+    info.Item.ItemId = itemID;
+    info.Item.ItemName = itemName;
+    info.CountRest = count;
+    info.IsDelete = false;
+    info.Timestamp = time(0);
+    info.WeightRest = 0;
+    info.Item.Price = 888;
+    DB->AddItemStorageInfo(info);
+}
+
 int main()
 {
+    srand(time(0));
     std::cout << "Hello World1!\n";
+    DB->InitDatabase("ForTest1.osdb");
+    for (int i = 0; i < 100000; i++) {
+        static char tmp[100] = { 0 };
+        sprintf_s(tmp,"aaa_%d",i);
+        AddItem(tmp,i, tmp);
+        if(i % 10000 == 0) printf("%d\n",i);
+    }
+    DB->UpdateDatabaseFile();
 }
 
 // 运行程序: Ctrl + F5 或调试 >“开始执行(不调试)”菜单

@@ -151,7 +151,9 @@ private:
 	std::set<std::string> GlobalString;
 	std::map<int, std::string> cacheAbstractString;
 	std::map<int, CItemInfo> ItemInfoTable;
-	std::vector<CItemStorageInfo> ItemStorageTable;
+	std::map<std::string, CItemStorageInfo> ItemStorageTable_mp;
+	std::vector<CItemStorageInfo> ItemStorageTable_vec;
+	//std::vector<CItemStorageInfo> ItemStorageTable;
 
 	void GenerateEmptyDBFile(std::string dbFileName);
 	std::string GetAbstractString(const AbstractString& as);

@@ -49,7 +49,7 @@ void Database::LoadBinaryDBFile(std::string dbFileName) {
     ItemInfoTable.clear();
     cacheAbstractString.clear();
     GlobalString.clear();
-    ItemStorageTable.clear();
+    ItemStorageTable_mp.clear();
 
     curDbFileName = dbFileName;
 
@@ -103,7 +103,7 @@ void Database::LoadBinaryDBFile(std::string dbFileName) {
         realItemStorageInfo.IsDelete = pCurItemStorageInfo->IsDelete;
         realItemStorageInfo.Timestamp = pCurItemStorageInfo->Timestamp;
         realItemStorageInfo.WeightRest = pCurItemStorageInfo->WeightRest;
-        ItemStorageTable.push_back(realItemStorageInfo);
+        ItemStorageTable_mp[realItemStorageInfo.Item.ItemId] = realItemStorageInfo;
     }
 }
 
@@ -124,52 +124,50 @@ bool Database::InitDatabase(std::string dbFileName)
 }
 CItemStorageInfo Database::QueryItemStorageInfo(std::string ItemId)
 {
-    for (CItemStorageInfo& info : ItemStorageTable) {
-        if (info.Item.ItemId == ItemId) return info;
+    if (ItemStorageTable_mp.count(ItemId)) {
+        return ItemStorageTable_mp[ItemId];
     }
     throw HarmoneyException("无法找到指定ItemId的CItemStorageInfo!");
 }
 
 bool Database::ModifyItemStorageInfo(CItemStorageInfo& StorageInfo)
 {
-    for (CItemStorageInfo& info : ItemStorageTable) {
-        if (info.Item.ItemId == StorageInfo.Item.ItemId) {
-            info = StorageInfo;
-            return true;
-        }
+    if (ItemStorageTable_mp.count(StorageInfo.Item.ItemId)) {
+        ItemStorageTable_mp[StorageInfo.Item.ItemId] = StorageInfo;
+        return true;
     }
     throw HarmoneyException("无法找到指定ItemId的CItemStorageInfo!");
 }
 
 bool Database::AddItemStorageInfo(CItemStorageInfo& StorageInfo)
 {
-    for (CItemStorageInfo& info : ItemStorageTable) {
-        if (info.Item.ItemId == StorageInfo.Item.ItemId) {
-            // 存在，那么就合并
-            info.WeightRest += StorageInfo.WeightRest;
-            info.CountRest += StorageInfo.CountRest;
-            info.Timestamp = StorageInfo.Timestamp;
-            info.Item = StorageInfo.Item;
-            return true;
-        }
+    if (ItemStorageTable_mp.count(StorageInfo.Item.ItemId)) {
+        auto& info = ItemStorageTable_mp[StorageInfo.Item.ItemId];
+        info.WeightRest += StorageInfo.WeightRest;
+        info.CountRest += StorageInfo.CountRest;
+        info.Timestamp = StorageInfo.Timestamp;
+        info.Item = StorageInfo.Item;
+        return true;
     }
     // 不存在，就直接插入
-    ItemStorageTable.push_back(StorageInfo);
+    ItemStorageTable_mp[StorageInfo.Item.ItemId] = StorageInfo;
     return true;
 }
 
 std::vector<CItemStorageInfo>& Database::GetAllItemStorageInfo()
 {
-    return ItemStorageTable;
+    ItemStorageTable_vec.clear();
+    for (std::map<std::string, CItemStorageInfo>::iterator it = ItemStorageTable_mp.begin(); it != ItemStorageTable_mp.end(); it++) {
+        ItemStorageTable_vec.push_back(it->second);
+    }
+    return ItemStorageTable_vec;
 }
 
 bool Database::DeleteItemStorageInfo(std::string ItemId)
 {
-    for (CItemStorageInfo& info : ItemStorageTable) {
-        if (info.Item.ItemId == ItemId) {
-            info.IsDelete = true;
-            return true;
-        }
+    if (ItemStorageTable_mp.count(ItemId)) {
+        ItemStorageTable_mp[ItemId].IsDelete = true;
+        return true;
     }
     throw HarmoneyException("无法找到指定ItemId的CItemStorageInfo!");
 }
@@ -216,7 +214,8 @@ bool Database::UpdateDatabaseFile()
     abItemInfoMap.clear();
     abItemStorageInfoTable.clear();
     AbstractItemInfoCnt = 0;
-    for (CItemStorageInfo& info : ItemStorageTable) {
+    GetAllItemStorageInfo();
+    for (CItemStorageInfo& info : ItemStorageTable_vec) {
         AllStrings.insert(info.Item.ItemId);
         AllStrings.insert(info.Item.ItemName);
     }
@@ -229,9 +228,9 @@ bool Database::UpdateDatabaseFile()
         abStrMap[*it] = as;
         stringPoolSize += (it->size() + 1);
     }
-
+    
     // 提取所有Item到AbstractItem表
-    for (CItemStorageInfo& info : ItemStorageTable) {
+    for (CItemStorageInfo& info : ItemStorageTable_vec) {
         AbstractItemInfo abi;
         abi.ItemDatabaseID = ++AbstractItemInfoCnt;
         abi.Cost = info.Item.Cost;
@@ -243,7 +242,7 @@ bool Database::UpdateDatabaseFile()
     }
 
     // 提取所有ItemStorage到AbstractItemStorage表
-    for (CItemStorageInfo& info : ItemStorageTable) {
+    for (CItemStorageInfo& info : ItemStorageTable_vec) {
         AbstractItemStorageInfo aisi;
         aisi.CountRest = info.CountRest;
         aisi.IsDelete = info.IsDelete;
