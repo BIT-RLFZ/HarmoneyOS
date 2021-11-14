@@ -11,6 +11,9 @@
 *.userosscache
 *.sln.docstates
 
+# HarmoneyOS DB File
+*.osdb
+
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 

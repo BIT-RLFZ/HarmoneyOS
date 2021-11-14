@@ -1,5 +1,6 @@
 #pragma once
 #include "CItemStorageInfo.h"
+#include "CItemInfo.h"
 #include "CPurchaseItemRecord.h"
 #include "CPurchaseOrderRecord.h"
 #include "HarmoneyException.h"
@@ -67,8 +68,15 @@ public:
 		gFileData = NULL;
 		gStringPool = NULL;
 	}
+	
 	~Database() {
-		if (gFileData) delete gFileData;
+		try{
+			UpdateDatabaseFile();
+		}
+		catch (NoImplException ex) {};
+		
+		if (gFileData) delete[] gFileData;
+		if (gStringPool) delete[] gStringPool;
 	}
 	/*
 		初始化数据库，读入数据库文件数据并解析
@@ -129,16 +137,24 @@ public:
 		查询数据库中所有的订单记录
 	*/
 	std::vector<CPurchaseOrderRecord>& GetAllPurchaseOrderRecord();
+	/*
+		把当前内存中的数据库文件存储到文件中
+		由于每次存储可能会消耗一定的时间(<100ms)，建议在执行完一系列修改操作后再调用这条语句
+		注意：在程序退出时会自动执行这条语句，但是为了防止意外，请每次操作数据库后都调用此语句
+	*/
+	bool UpdateDatabaseFile();
 private:
+	std::string curDbFileName;
 	char* gFileData;
 	char* gStringPool;
 	DatabaseHeader* gFileHeader;
 	std::set<std::string> GlobalString;
-	std::map<std::string, AbstractString> stringMap;
+	std::map<int, std::string> cacheAbstractString;
+	std::map<int, CItemInfo> ItemInfoTable;
+	std::vector<CItemStorageInfo> ItemStorageTable;
+
 	void GenerateEmptyDBFile(std::string dbFileName);
 	std::string GetAbstractString(const AbstractString& as);
 	void LoadBinaryDBFile(std::string dbFileName);
-
-	
 };
 

@@ -3,11 +3,11 @@
 #include "Database.h"
 #include <string>
 #include <vector>
+#include "GlobalVar.h"
 class CashierSystem
 {
 private:
 	std::vector<CPurchaseItemRecord> Cart;	// 购物车，用vector记录
-	Database DB;	//DB对象负责数据库操作
 	int OrderId;	// 当前订单的编号
 	int Timestamp;	//当前订单的时间戳
 	void generateOrderId(); //生成当前订单的订单编号

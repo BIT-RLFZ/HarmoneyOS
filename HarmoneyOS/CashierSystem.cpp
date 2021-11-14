@@ -3,9 +3,11 @@
 #include "CPurchaseItemRecord.h"
 #include "CItemStorageInfo.h"
 #include "CPurchaseOrderRecord.h"
+#include "NoImplException.h"
 #include <string>
 #include <algorithm>
-#include "NoImplException.h";
+
+
 const int COUNT = 0;
 const int WEIGHT = 1;
 //未实现
@@ -49,7 +51,7 @@ bool CashierSystem::AddItemToCart(const std::string& ItemProcessedId, int cnt)
 	// 将处理过的Id转换成原来的Id 并得到商品类型，商品重量(如果是按重量计价的商品的话)
 	std::string ItemId = processId(ItemProcessedId,Type, Weight);
 	// 按原Id找到指定的商品信息
-	CItemStorageInfo ItemStorageInfo = DB.QueryItemStorageInfo(ItemId);
+	CItemStorageInfo ItemStorageInfo = DB->QueryItemStorageInfo(ItemId);
 	//将商品，商品个数，时间戳和订单号包装成一条购物记录
 	CPurchaseItemRecord Record(ItemStorageInfo.Item, Weight, cnt, Timestamp, OrderId);
 	// 查找当前购物车中是否有该商品
@@ -80,7 +82,7 @@ bool CashierSystem::RemoveItemFromCart(const std::string& ItemProcessedId)
 	int Type = 0;
 	double Weight = 0.0;
 	std::string ItemId = processId(ItemProcessedId, Type, Weight);	//转换成商品原ID
-	CItemStorageInfo ItemStorageInfo = DB.QueryItemStorageInfo(ItemId);	//数据库中查找商品的信息
+	CItemStorageInfo ItemStorageInfo = DB->QueryItemStorageInfo(ItemId);	//数据库中查找商品的信息
 	auto ItemRecordIter = Cart.begin();	//遍历购物车
 	while (ItemRecordIter != Cart.end()) {
 		if (ItemRecordIter->Item == ItemStorageInfo.Item) {	//找到该商品就删掉
@@ -139,18 +141,18 @@ bool CashierSystem::Checkout(std::vector<CPurchaseItemRecord>& CurrentPurchaseLi
 	CItemStorageInfo ItemStorageInfo;
 	while (!Cart.empty()) {
 		ItemRecord = Cart.back();
-		DB.AddPurchaseItemRecord(ItemRecord);	//添加商品购买记录
-		ItemStorageInfo = DB.QueryItemStorageInfo(ItemRecord.Item.ItemId);	//获取库存信息
+		DB->AddPurchaseItemRecord(ItemRecord);	//添加商品购买记录
+		ItemStorageInfo = DB->QueryItemStorageInfo(ItemRecord.Item.ItemId);	//获取库存信息
 		if (ItemRecord.Item.ItemType == COUNT) {	// 根据商品类别更改库存对象的信息
 			ItemStorageInfo.CountRest -= ItemRecord.Count;
 		}
 		else {
 			ItemStorageInfo.WeightRest -= ItemRecord.Weight;
 		}
-		DB.ModifyItemStorageInfo(ItemStorageInfo);	//修改库存
+		DB->ModifyItemStorageInfo(ItemStorageInfo);	//修改库存
 		Cart.pop_back();	//清楚商品
 	}
 	CPurchaseOrderRecord OrderRecord(OrderId, Timestamp);	//生成订单
-	DB.AddPurchaseOrderRecord(OrderRecord);	//向数据库添加订单
+	DB->AddPurchaseOrderRecord(OrderRecord);	//向数据库添加订单
 	return true;
 }

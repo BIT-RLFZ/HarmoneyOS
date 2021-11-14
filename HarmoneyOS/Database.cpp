@@ -34,8 +34,6 @@ void Database::GenerateEmptyDBFile(std::string dbFileName) {
     file.close();
 }
 
-std::map<int, std::string> cacheAbstractString;
-
 std::string Database::GetAbstractString(const AbstractString &as) {
     if (cacheAbstractString.count(as.SPOffset)) return cacheAbstractString[as.SPOffset];
     char* buf = new char[as.length];
@@ -47,6 +45,12 @@ std::string Database::GetAbstractString(const AbstractString &as) {
 }
 
 void Database::LoadBinaryDBFile(std::string dbFileName) {
+    // 全局数据表的清空
+    ItemInfoTable.clear();
+    cacheAbstractString.clear();
+    GlobalString.clear();
+    ItemStorageTable.clear();
+
     // 文件数据的读入
     struct _stat info;
     _stat(dbFileName.c_str(), &info);
@@ -72,8 +76,35 @@ void Database::LoadBinaryDBFile(std::string dbFileName) {
     verifyAS.length = 11;
     auto vStr = GetAbstractString(verifyAS);
     if (vStr != "StringPool") throw HarmoneyException("数据库字符串池校验错误!");
+    
+    // AbstractItemInfo 池的载入
+    auto AItemInfoBegin = (AbstractItemInfo*)(gFileData + gFileHeader->AItemInfoPoolOffset);
+    for (int i = 0; i < gFileHeader->AItemInfoCount; i++) {
+        auto pCurItemInfo = AItemInfoBegin + i;
+        CItemInfo realIteminfo;
+        realIteminfo.ItemId = GetAbstractString(pCurItemInfo->ItemId);
+        realIteminfo.ItemName = GetAbstractString(pCurItemInfo->ItemName);
+        realIteminfo.Cost = pCurItemInfo->Cost;
+        realIteminfo.ItemType = pCurItemInfo->ItemType;
+        realIteminfo.Price = pCurItemInfo->Price;
+        ItemInfoTable[pCurItemInfo->ItemDatabaseID] = realIteminfo;
+    }
 
+    // AbstractItemStorageInfoPool 池的载入
+    auto AItemStorageInfoPoolBegin = (AbstractItemStorageInfo*)(gFileData + gFileHeader->AItemStorageInfoPoolOffset);
+    for (int i = 0; i < gFileHeader->AItemStorageInfoCount; i++) {
+        auto pCurItemStorageInfo = AItemStorageInfoPoolBegin + i;
+        CItemStorageInfo realItemStorageInfo;
+        if (ItemInfoTable.count(pCurItemStorageInfo->Item) == 0) throw HarmoneyException("无法在ItemInfo表中找到指定ID的Item！");
+        realItemStorageInfo.Item = ItemInfoTable[pCurItemStorageInfo->Item];
+        realItemStorageInfo.CountRest = pCurItemStorageInfo->CountRest;
+        realItemStorageInfo.IsDelete = pCurItemStorageInfo->IsDelete;
+        realItemStorageInfo.Timestamp = pCurItemStorageInfo->Timestamp;
+        realItemStorageInfo.WeightRest = pCurItemStorageInfo->WeightRest;
+        ItemStorageTable.push_back(realItemStorageInfo);
+    }
 }
+
 
 bool Database::InitDatabase(std::string dbFileName)
 {
@@ -91,27 +122,54 @@ bool Database::InitDatabase(std::string dbFileName)
 }
 CItemStorageInfo Database::QueryItemStorageInfo(std::string ItemId)
 {
-    throw NoImplException(__FUNCTION__);
+    for (CItemStorageInfo& info : ItemStorageTable) {
+        if (info.Item.ItemId == ItemId) return info;
+    }
+    throw HarmoneyException("无法找到指定ItemId的CItemStorageInfo!");
 }
 
 bool Database::ModifyItemStorageInfo(CItemStorageInfo& StorageInfo)
 {
-    throw NoImplException(__FUNCTION__);
+    for (CItemStorageInfo& info : ItemStorageTable) {
+        if (info.Item.ItemId == StorageInfo.Item.ItemId) {
+            info = StorageInfo;
+            return true;
+        }
+    }
+    throw HarmoneyException("无法找到指定ItemId的CItemStorageInfo!");
 }
 
 bool Database::AddItemStorageInfo(CItemStorageInfo& StorageInfo)
 {
-    throw NoImplException(__FUNCTION__);
+    for (CItemStorageInfo& info : ItemStorageTable) {
+        if (info.Item.ItemId == StorageInfo.Item.ItemId) {
+            // 存在，那么就合并
+            info.WeightRest += StorageInfo.WeightRest;
+            info.CountRest += StorageInfo.CountRest;
+            info.Timestamp = StorageInfo.Timestamp;
+            info.Item = StorageInfo.Item;
+            return true;
+        }
+    }
+    // 不存在，就直接插入
+    ItemStorageTable.push_back(StorageInfo);
+    return true;
 }
 
 std::vector<CItemStorageInfo>& Database::GetAllItemStorageInfo()
 {
-    throw NoImplException(__FUNCTION__);
+    return ItemStorageTable;
 }
 
 bool Database::DeleteItemStorageInfo(std::string ItemId)
 {
-    throw NoImplException(__FUNCTION__);
+    for (CItemStorageInfo& info : ItemStorageTable) {
+        if (info.Item.ItemId == ItemId) {
+            info.IsDelete = true;
+            return true;
+        }
+    }
+    throw HarmoneyException("无法找到指定ItemId的CItemStorageInfo!");
 }
 
 bool Database::AddPurchaseItemRecord(CPurchaseItemRecord& PurchaseItemRecord)
@@ -143,3 +201,11 @@ std::vector<CPurchaseOrderRecord>& Database::GetAllPurchaseOrderRecord()
 {
     throw NoImplException(__FUNCTION__);
 }
+
+bool Database::UpdateDatabaseFile()
+{
+    throw NoImplException(__FUNCTION__);
+}
+
+
+Database* DB = new Database();

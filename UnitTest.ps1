@@ -11,32 +11,17 @@ $test86	 = $buildtfm -eq 'x86'
 if($test86){
     Write-Host "Generating Test Project x86...(Debug)"
     msbuild HarmoneyOSTest/HarmoneyOSTest.vcxproj /p:Platform=x86 /p:Configuration=Debug
-
-    Write-Host "Generating Test Project x86...(Release)"
-    msbuild HarmoneyOSTest/HarmoneyOSTest.vcxproj /p:Platform=x86 /p:Configuration=Release
-
     
     Write-Host "Running Unit Test Project x86...(Debug)"
     VSTest.Console.exe HarmoneyOSTest\Debug\HarmoneyOSTest.dll
     Write-Host "Running Unit Test x86 OK!(Debug)"
-
-    Write-Host "Running Unit Test Project x86...(Release)"
-    VSTest.Console.exe HarmoneyOSTest\Release\HarmoneyOSTest.dll
-    Write-Host "Running Unit Test x86 OK!(Release)"
 }
 
 if($test64){
     Write-Host "Generating Test Project x64...(Debug)"
     msbuild HarmoneyOSTest/HarmoneyOSTest.vcxproj /p:Platform=x64 /p:Configuration=Debug
-
-    Write-Host "Generating Test Project x64...(Release)"
-    msbuild HarmoneyOSTest/HarmoneyOSTest.vcxproj /p:Platform=x64 /p:Configuration=Release
-
+	
     Write-Host "Running Unit Test Project x64...(Debug)"
     VSTest.Console.exe HarmoneyOSTest\x64\Debug\HarmoneyOSTest.dll
     Write-Host "Running Unit Test x64 OK!(Debug)"
-
-    Write-Host "Running Unit Test Project x64...(Release)"
-    VSTest.Console.exe HarmoneyOSTest\x64\Release\HarmoneyOSTest.dll
-    Write-Host "Running Unit Test x64 OK!(Release)"
 }
