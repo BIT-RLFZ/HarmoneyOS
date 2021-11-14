@@ -18,7 +18,7 @@ void Database::GenerateEmptyDBFile(std::string dbFileName) {
     // 约定的固定字符串在字符池中的大小
     totSize += strlen("StringPool") + 1; //\0的位置
     totSize += 1;
-    tmpHeader.AItemInfoPoolOffset = tmpHeader.AItemStorageInfoPoolOffset = tmpHeader.APurchaseItemRecordPoolOffset = tmpHeader.APurchaseOrderRecordOffset = totSize;
+    tmpHeader.AItemInfoPoolOffset = tmpHeader.AItemStorageInfoPoolOffset = tmpHeader.APurchaseItemRecordPoolOffset = tmpHeader.APurchaseOrderRecordPoolOffset = totSize;
     tmpHeader.AItemInfoCount = tmpHeader.AItemStorageInfoCount = tmpHeader.APurchaseItemRecordCount = tmpHeader.APurchaseOrderRecordCount = 0;
     char* fileBuf = new char[totSize + 1];
 
@@ -50,6 +50,8 @@ void Database::LoadBinaryDBFile(std::string dbFileName) {
     cacheAbstractString.clear();
     GlobalString.clear();
     ItemStorageTable.clear();
+
+    curDbFileName = dbFileName;
 
     // 文件数据的读入
     struct _stat info;
@@ -204,8 +206,105 @@ std::vector<CPurchaseOrderRecord>& Database::GetAllPurchaseOrderRecord()
 
 bool Database::UpdateDatabaseFile()
 {
-    throw NoImplException(__FUNCTION__);
+    static std::set<std::string> AllStrings;
+    static std::map<std::string, AbstractString> abStrMap;
+    static std::map<std::string, AbstractItemInfo> abItemInfoMap;
+    static std::vector<AbstractItemStorageInfo> abItemStorageInfoTable;
+    static int AbstractItemInfoCnt = 0;
+    AllStrings.clear();
+    abStrMap.clear();
+    abItemInfoMap.clear();
+    abItemStorageInfoTable.clear();
+    AbstractItemInfoCnt = 0;
+    for (CItemStorageInfo& info : ItemStorageTable) {
+        AllStrings.insert(info.Item.ItemId);
+        AllStrings.insert(info.Item.ItemName);
+    }
+    // 计算字符串池大小
+    int stringPoolSize = strlen("StringPool") + 1;
+    for (std::set<std::string>::iterator it = AllStrings.begin(); it != AllStrings.end(); it++) {
+        AbstractString as;
+        as.SPOffset = stringPoolSize;
+        as.length = it->size() + 1;
+        abStrMap[*it] = as;
+        stringPoolSize += (it->size() + 1);
+    }
+
+    // 提取所有Item到AbstractItem表
+    for (CItemStorageInfo& info : ItemStorageTable) {
+        AbstractItemInfo abi;
+        abi.ItemDatabaseID = ++AbstractItemInfoCnt;
+        abi.Cost = info.Item.Cost;
+        abi.ItemId = abStrMap[info.Item.ItemId];
+        abi.ItemName = abStrMap[info.Item.ItemName];
+        abi.ItemType = info.Item.ItemType;
+        abi.Price = info.Item.Price;
+        abItemInfoMap[info.Item.ItemId] = abi;
+    }
+
+    // 提取所有ItemStorage到AbstractItemStorage表
+    for (CItemStorageInfo& info : ItemStorageTable) {
+        AbstractItemStorageInfo aisi;
+        aisi.CountRest = info.CountRest;
+        aisi.IsDelete = info.IsDelete;
+        aisi.Item = abItemInfoMap[info.Item.ItemId].ItemDatabaseID;
+        aisi.Timestamp = info.Timestamp;
+        aisi.WeightRest = info.WeightRest;
+        abItemStorageInfoTable.push_back(aisi);
+    }
+
+    int AbstractItemInfoPoolSize = abItemInfoMap.size() * sizeof(AbstractItemInfo);
+    int AbstractItemStorageInfoPoolSize = abItemStorageInfoTable.size() * sizeof(AbstractItemStorageInfo);
+    int AbstractPurchaseItemRecordPoolSize = 0;
+    int AbstractPurchaseOrderRecordPoolSize = 0;
+
+    int totDBFileLength = sizeof(DatabaseHeader) + stringPoolSize + AbstractItemInfoPoolSize + AbstractItemStorageInfoPoolSize + AbstractPurchaseItemRecordPoolSize + AbstractPurchaseOrderRecordPoolSize;
+
+    // 开始生成文件数据
+    char* fileBuf = new char[totDBFileLength+2];
+    // 构造header
+    DatabaseHeader header;
+    strcpy_s(header.magicChar, "HarmoneyDB");
+    header.timestamp = time(0);
+    header.StringPoolOffset = sizeof(DatabaseHeader);
+    header.StringPoolLength = stringPoolSize;
+    header.AItemInfoPoolOffset = header.StringPoolOffset + header.StringPoolLength;
+    header.AItemInfoCount = abItemInfoMap.size();
+    header.AItemStorageInfoPoolOffset = header.AItemInfoPoolOffset + AbstractItemInfoPoolSize;
+    header.AItemStorageInfoCount = abItemStorageInfoTable.size();
+    header.APurchaseItemRecordCount = header.APurchaseOrderRecordCount = 0;
+    header.APurchaseItemRecordPoolOffset = header.APurchaseOrderRecordPoolOffset = 0;
+
+    // 写入header
+    memcpy_s(fileBuf, totDBFileLength, &header, sizeof(header));
+
+    // 写入string
+    memcpy_s(fileBuf + header.StringPoolOffset, header.StringPoolLength, "StringPool", strlen("StringPool") + 1);
+    for (std::set<std::string>::iterator it = AllStrings.begin(); it != AllStrings.end(); it++) {
+        auto as = abStrMap[*it];
+        memcpy_s(fileBuf + header.StringPoolOffset + as.SPOffset, header.StringPoolLength, it->c_str(), as.length);
+    }
+
+    // 写入AbstractItemInfo
+    int nowWrite = 0;
+    for (std::map<std::string, AbstractItemInfo>::iterator it = abItemInfoMap.begin(); it != abItemInfoMap.end(); it++) {
+        memcpy_s(fileBuf + header.AItemInfoPoolOffset + nowWrite * sizeof(AbstractItemInfo), sizeof(AbstractItemInfo), &(it->second), sizeof(AbstractItemInfo));
+        nowWrite++;
+    }
+
+    // 写入AbstractStorageItemInfo
+    nowWrite = 0;
+    for (auto aisi : abItemStorageInfoTable) {
+        memcpy_s(fileBuf + header.AItemStorageInfoPoolOffset + nowWrite * sizeof(aisi), sizeof(aisi), &aisi, sizeof(aisi));
+        nowWrite++;
+    }
+
+    remove(curDbFileName.c_str()); //确保没有文件存在
+    std::ofstream file(curDbFileName, std::ios::out | std::ios::binary);
+    file.write(fileBuf, totDBFileLength + 2);
+    file.close();
+    return true;
 }
 
 
-Database* DB = new Database();
+Database* DB = new Database(); // 给全局用

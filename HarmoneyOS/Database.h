@@ -37,7 +37,7 @@ struct DatabaseHeader {
 	int AItemStorageInfoCount;
 	int APurchaseItemRecordPoolOffset;
 	int APurchaseItemRecordCount;
-	int APurchaseOrderRecordOffset;
+	int APurchaseOrderRecordPoolOffset;
 	int APurchaseOrderRecordCount;
 };
 struct AbstractString {

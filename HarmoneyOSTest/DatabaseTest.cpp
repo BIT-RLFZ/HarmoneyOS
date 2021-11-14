@@ -197,6 +197,44 @@ namespace HarmoneyOSTest
 				Assert::Fail();
 			}
 		}
+
+		TEST_METHOD(t5_DBStorageFileTest) {
+			try {
+				int previousSize = database->GetAllItemStorageInfo().size();
+				database->UpdateDatabaseFile();
+				database->InitDatabase("test.osdb");
+				auto storage = database->GetAllItemStorageInfo();
+				if(storage.size() != previousSize) Assert::Fail();
+
+				CItemStorageInfo testInfo;
+				testInfo.CountRest = 123;
+				testInfo.IsDelete = false;
+				testInfo.Timestamp = time(0);
+				testInfo.WeightRest = 0;
+				testInfo.Item.ItemName = "测试物品";
+				testInfo.Item.Cost = 233;
+				testInfo.Item.ItemId = "123456888";
+				testInfo.Item.ItemType = 0;
+				testInfo.Item.Price = 999;
+				database->AddItemStorageInfo(testInfo);
+				database->UpdateDatabaseFile();
+				database->InitDatabase("test.osdb");
+				auto result = database->QueryItemStorageInfo("123456888");
+				if(result.Item.ItemName != "测试物品") Assert::Fail();
+				if (result.Item.Cost != 233) Assert::Fail();
+				if (result.Item.Price != 999) Assert::Fail();
+				if (result.Item.ItemType != 0) Assert::Fail();
+				if (result.CountRest != 123) Assert::Fail();
+			}
+			catch (NoImplException ex) {
+				Logger::WriteMessage((ex.GetFunctionName() + "() throw NoImplException! (ignore)\n").c_str());
+			}
+			catch (HarmoneyException ex) {
+				Logger::WriteMessage("[Database_Test] Test Failed!\n");
+				Logger::WriteMessage(("[Exception] " + ex.GetMessage()).c_str());
+				Assert::Fail();
+			}
+		}
 		
 	};
 }
