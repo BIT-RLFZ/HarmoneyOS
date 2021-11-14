@@ -11,7 +11,7 @@
 #include <map>
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
-Database* database = new Database(1);
+Database* database = new Database();
 
 namespace HarmoneyOSTest
 {
