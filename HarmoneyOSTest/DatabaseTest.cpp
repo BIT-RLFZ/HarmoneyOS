@@ -182,7 +182,6 @@ namespace HarmoneyOSTest
 				printf("dbsize: %d\n", database->GetAllItemStorageInfo().size());
 				for (int i = 0; i < items.size(); i++) {
 					auto item = items[i];
-					printf("deleting: %s", item.ItemId.c_str());
 					database->DeleteItemStorageInfo(item.ItemId);
 					auto itemInDB = database->QueryItemStorageInfo(item.ItemId);
 					if (!itemInDB.IsDelete) Assert::Fail();

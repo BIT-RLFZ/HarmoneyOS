@@ -9,41 +9,9 @@
 
 using namespace std;
 
-void AddItem(string itemName, int count, string itemID) {
-    CItemStorageInfo info;
-    info.Item.ItemType = 0;
-    info.Item.Cost = 123;
-    info.Item.ItemId = itemID;
-    info.Item.ItemName = itemName;
-    info.CountRest = count;
-    info.IsDelete = false;
-    info.Timestamp = time(0);
-    info.WeightRest = 0;
-    info.Item.Price = 888;
-    DB->AddItemStorageInfo(info);
-}
-
 int main()
 {
     std::cout << "Hello World1!\n";
-    DB->InitDatabase("ForTest.osdb");
-    auto storage = DB->GetAllItemStorageInfo();
-    if (storage.size() > 0) {
-        for (auto aaa : storage) {
-            printf("[Item] Name = %s count = %d ID = %s\n", aaa.Item.ItemName.c_str(), aaa.CountRest, aaa.Item.ItemId.c_str());
-        }
-        return 0;
-    }
-    AddItem("name1",10,"ID1");
-    AddItem("name2", 20, "ID2");
-    AddItem("name3", 30, "ID3");
-    AddItem("name4", 40, "ID4");
-    AddItem("name5", 50, "ID5");
-    AddItem("name6", 60, "ID6");
-    AddItem("name7", 70, "ID7");
-    AddItem("name8", 80, "ID8");
-    AddItem("臭豆腐", 80, "ID99");
-    DB->UpdateDatabaseFile();
 }
 
 // 运行程序: Ctrl + F5 或调试 >“开始执行(不调试)”菜单
