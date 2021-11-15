@@ -60,6 +60,14 @@ struct AbstractItemStorageInfo {
 	bool IsDelete;
 };
 
+struct AbstractPurchaseItemRecord {
+	int Item; // 查ItemInfo表，找到ItemDatabaseID为Item的项目即为此项
+	double Weight;
+	int Count;
+	int Timestamp;
+	int OrderId;
+};
+
 class Database
 {
 public:
@@ -153,7 +161,8 @@ private:
 	std::map<int, CItemInfo> ItemInfoTable;
 	std::map<std::string, CItemStorageInfo> ItemStorageTable_mp;
 	std::vector<CItemStorageInfo> ItemStorageTable_vec;
-	//std::vector<CItemStorageInfo> ItemStorageTable;
+	std::vector<CPurchaseItemRecord> PurchaseItemRecordTable_vec;
+	int maxPurchaseItemRecordID;
 
 	void GenerateEmptyDBFile(std::string dbFileName);
 	std::string GetAbstractString(const AbstractString& as);

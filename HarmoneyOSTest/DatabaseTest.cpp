@@ -197,7 +197,11 @@ namespace HarmoneyOSTest
 			}
 		}
 
-		TEST_METHOD(t5_DBStorageFileTest) {
+		/*
+			测试数据库存储文件的正确性，以及读取文件的正确性
+			第一部分：测试物品信息的读入存储
+		*/
+		TEST_METHOD(t5_DBStorageFileTest_1) {
 			try {
 				int previousSize = database->GetAllItemStorageInfo().size();
 				database->UpdateDatabaseFile();
@@ -235,5 +239,43 @@ namespace HarmoneyOSTest
 			}
 		}
 		
+		/*
+			测试数据库存储文件的正确性，以及读取文件的正确性
+			第二部分：测试物品购买记录的读入存储
+		*/
+		TEST_METHOD(t5_DBStorageFileTest_2) {
+			try {
+				database->InitDatabase("test.osdb");
+				for (int i = 1; i <= 100; i++) {
+					CPurchaseItemRecord pir;
+					pir.Item = items[rand() % items.size()];
+					pir.Count = 12;
+					pir.OrderId = i;
+					pir.Timestamp = time(0);
+					pir.Weight = 0;
+					database->AddPurchaseItemRecord(pir);
+				}
+				database->UpdateDatabaseFile();
+				database->InitDatabase("test.osdb");
+				auto all = database->GetAllPurchaseItemRecord();
+				int sumCount = 0, sumOrderId = 0, sumWeight = 0;
+				for (auto each : all) {
+					sumCount += each.Count;
+					sumOrderId += each.OrderId;
+					sumWeight += each.Weight;
+				}
+				if (sumCount != 1200) Assert::Fail();
+				if (sumOrderId != 5050) Assert::Fail();
+				if (sumWeight != 0) Assert::Fail();
+			}
+			catch (NoImplException ex) {
+				Logger::WriteMessage((ex.GetFunctionName() + "() throw NoImplException! (ignore)\n").c_str());
+			}
+			catch (HarmoneyException ex) {
+				Logger::WriteMessage("[Database_Test] Test Failed!\n");
+				Logger::WriteMessage(("[Exception] " + ex.GetMessage()).c_str());
+				Assert::Fail();
+			}
+		}
 	};
 }

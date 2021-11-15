@@ -50,6 +50,8 @@ void Database::LoadBinaryDBFile(std::string dbFileName) {
     cacheAbstractString.clear();
     GlobalString.clear();
     ItemStorageTable_mp.clear();
+    PurchaseItemRecordTable_vec.clear();
+    maxPurchaseItemRecordID = 0;
 
     curDbFileName = dbFileName;
 
@@ -105,6 +107,21 @@ void Database::LoadBinaryDBFile(std::string dbFileName) {
         realItemStorageInfo.WeightRest = pCurItemStorageInfo->WeightRest;
         ItemStorageTable_mp[realItemStorageInfo.Item.ItemId] = realItemStorageInfo;
     }
+
+    // AbstractPurchaseItemRecordPool 池载入
+    auto APurchaseItemRecordPoolBegin = (AbstractPurchaseItemRecord*)(gFileData + gFileHeader->APurchaseItemRecordPoolOffset);
+    for (int i = 0; i < gFileHeader->APurchaseItemRecordCount; i++) {
+        auto pCurPurchaseItemRecord = APurchaseItemRecordPoolBegin + i;
+        CPurchaseItemRecord realPIRecord;
+        if (ItemInfoTable.count(pCurPurchaseItemRecord->Item) == 0) throw HarmoneyException("无法在ItemInfo表中找到指定ID的Item！");
+        realPIRecord.Item = ItemInfoTable[pCurPurchaseItemRecord->Item];
+        realPIRecord.Count = pCurPurchaseItemRecord->Count;
+        realPIRecord.Timestamp = pCurPurchaseItemRecord->Timestamp;
+        realPIRecord.Weight = pCurPurchaseItemRecord->Weight;
+        realPIRecord.OrderId = pCurPurchaseItemRecord->OrderId;
+        maxPurchaseItemRecordID = std::max(maxPurchaseItemRecordID, realPIRecord.OrderId);
+        PurchaseItemRecordTable_vec.push_back(realPIRecord);
+    }
 }
 
 
@@ -157,7 +174,7 @@ bool Database::AddItemStorageInfo(CItemStorageInfo& StorageInfo)
 std::vector<CItemStorageInfo>& Database::GetAllItemStorageInfo()
 {
     ItemStorageTable_vec.clear();
-    for (std::map<std::string, CItemStorageInfo>::iterator it = ItemStorageTable_mp.begin(); it != ItemStorageTable_mp.end(); it++) {
+    for (auto it = ItemStorageTable_mp.begin(); it != ItemStorageTable_mp.end(); it++) {
         ItemStorageTable_vec.push_back(it->second);
     }
     return ItemStorageTable_vec;
@@ -174,12 +191,13 @@ bool Database::DeleteItemStorageInfo(std::string ItemId)
 
 bool Database::AddPurchaseItemRecord(CPurchaseItemRecord& PurchaseItemRecord)
 {
-    throw NoImplException(__FUNCTION__);
+    PurchaseItemRecordTable_vec.push_back(PurchaseItemRecord);
+    return true;
 }
 
 std::vector<CPurchaseItemRecord>& Database::GetAllPurchaseItemRecord()
 {
-    throw NoImplException(__FUNCTION__);
+    return PurchaseItemRecordTable_vec;
 }
 
 CPurchaseOrderRecord Database::QueryPurchaseOrderRecord(int OrderId)
@@ -208,11 +226,14 @@ bool Database::UpdateDatabaseFile()
     static std::map<std::string, AbstractString> abStrMap;
     static std::map<std::string, AbstractItemInfo> abItemInfoMap;
     static std::vector<AbstractItemStorageInfo> abItemStorageInfoTable;
+    static std::vector<AbstractPurchaseItemRecord> abPurchaseItemRecordTable;
     static int AbstractItemInfoCnt = 0;
     AllStrings.clear();
     abStrMap.clear();
     abItemInfoMap.clear();
     abItemStorageInfoTable.clear();
+    abPurchaseItemRecordTable.clear();
+
     AbstractItemInfoCnt = 0;
     GetAllItemStorageInfo();
     for (CItemStorageInfo& info : ItemStorageTable_vec) {
@@ -252,9 +273,19 @@ bool Database::UpdateDatabaseFile()
         abItemStorageInfoTable.push_back(aisi);
     }
 
+    for (auto& purchaseRecord : PurchaseItemRecordTable_vec) {
+        AbstractPurchaseItemRecord apir;
+        apir.Count = purchaseRecord.Count;
+        apir.Item = abItemInfoMap[purchaseRecord.Item.ItemId].ItemDatabaseID;
+        apir.OrderId = purchaseRecord.OrderId;
+        apir.Timestamp = purchaseRecord.Timestamp;
+        apir.Weight = purchaseRecord.Weight;
+        abPurchaseItemRecordTable.push_back(apir);
+    }
+
     int AbstractItemInfoPoolSize = abItemInfoMap.size() * sizeof(AbstractItemInfo);
     int AbstractItemStorageInfoPoolSize = abItemStorageInfoTable.size() * sizeof(AbstractItemStorageInfo);
-    int AbstractPurchaseItemRecordPoolSize = 0;
+    int AbstractPurchaseItemRecordPoolSize = PurchaseItemRecordTable_vec.size() * sizeof(AbstractPurchaseItemRecord);
     int AbstractPurchaseOrderRecordPoolSize = 0;
 
     int totDBFileLength = sizeof(DatabaseHeader) + stringPoolSize + AbstractItemInfoPoolSize + AbstractItemStorageInfoPoolSize + AbstractPurchaseItemRecordPoolSize + AbstractPurchaseOrderRecordPoolSize;
@@ -271,22 +302,24 @@ bool Database::UpdateDatabaseFile()
     header.AItemInfoCount = abItemInfoMap.size();
     header.AItemStorageInfoPoolOffset = header.AItemInfoPoolOffset + AbstractItemInfoPoolSize;
     header.AItemStorageInfoCount = abItemStorageInfoTable.size();
-    header.APurchaseItemRecordCount = header.APurchaseOrderRecordCount = 0;
-    header.APurchaseItemRecordPoolOffset = header.APurchaseOrderRecordPoolOffset = 0;
+    header.APurchaseItemRecordPoolOffset = header.AItemStorageInfoPoolOffset + AbstractItemStorageInfoPoolSize;
+    header.APurchaseItemRecordCount = PurchaseItemRecordTable_vec.size();
+    header.APurchaseOrderRecordCount = 0;
+    header.APurchaseOrderRecordPoolOffset = 0;
 
     // 写入header
     memcpy_s(fileBuf, totDBFileLength, &header, sizeof(header));
 
     // 写入string
     memcpy_s(fileBuf + header.StringPoolOffset, header.StringPoolLength, "StringPool", strlen("StringPool") + 1);
-    for (std::set<std::string>::iterator it = AllStrings.begin(); it != AllStrings.end(); it++) {
+    for (auto it = AllStrings.begin(); it != AllStrings.end(); it++) {
         auto as = abStrMap[*it];
         memcpy_s(fileBuf + header.StringPoolOffset + as.SPOffset, header.StringPoolLength, it->c_str(), as.length);
     }
 
     // 写入AbstractItemInfo
     int nowWrite = 0;
-    for (std::map<std::string, AbstractItemInfo>::iterator it = abItemInfoMap.begin(); it != abItemInfoMap.end(); it++) {
+    for (auto it = abItemInfoMap.begin(); it != abItemInfoMap.end(); it++) {
         memcpy_s(fileBuf + header.AItemInfoPoolOffset + nowWrite * sizeof(AbstractItemInfo), sizeof(AbstractItemInfo), &(it->second), sizeof(AbstractItemInfo));
         nowWrite++;
     }
@@ -297,6 +330,14 @@ bool Database::UpdateDatabaseFile()
         memcpy_s(fileBuf + header.AItemStorageInfoPoolOffset + nowWrite * sizeof(aisi), sizeof(aisi), &aisi, sizeof(aisi));
         nowWrite++;
     }
+
+    // 写入AbstractPurchase
+    nowWrite = 0;
+    for (auto apir : abPurchaseItemRecordTable) {
+        memcpy_s(fileBuf + header.APurchaseItemRecordPoolOffset + nowWrite * sizeof(apir), sizeof(apir), &apir, sizeof(apir));
+        nowWrite++;
+    }
+
 
     remove(curDbFileName.c_str()); //确保没有文件存在
     std::ofstream file(curDbFileName, std::ios::out | std::ios::binary);

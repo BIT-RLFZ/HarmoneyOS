@@ -3,11 +3,14 @@
 
 #include <iostream>
 #include <string>
+#include <vector>
 #include "CItemStorageInfo.h"
 #include "CItemInfo.h"
 #include "GlobalVar.h"
 
 using namespace std;
+
+vector<CItemStorageInfo> Itemvec;
 
 void AddItem(string itemName, int count, string itemID) {
     CItemStorageInfo info;
@@ -20,6 +23,7 @@ void AddItem(string itemName, int count, string itemID) {
     info.Timestamp = time(0);
     info.WeightRest = 0;
     info.Item.Price = 888;
+    Itemvec.push_back(info);
     DB->AddItemStorageInfo(info);
 }
 
@@ -27,14 +31,37 @@ int main()
 {
     srand(time(0));
     std::cout << "Hello World1!\n";
+    /*
     DB->InitDatabase("ForTest1.osdb");
     for (int i = 0; i < 100000; i++) {
         static char tmp[100] = { 0 };
         sprintf_s(tmp,"aaa_%d",i);
         AddItem(tmp,i, tmp);
         if(i % 10000 == 0) printf("%d\n",i);
+    }*/
+    remove("ForTest2.osdb");
+    DB->InitDatabase("ForTest2.osdb");
+    for (int i = 0; i < 20; i++) {
+        static char tmp[100] = { 0 };
+        sprintf_s(tmp, "aaa_%d", i);
+        AddItem(tmp, i, tmp);
+        if (i % 10000 == 0) printf("%d\n", i);
+    }
+    for (int i = 0; i < 20; i++) {
+        CPurchaseItemRecord pir;
+        pir.Item = Itemvec[rand() % Itemvec.size()].Item;
+        pir.Count = 12;
+        pir.OrderId = i;
+        pir.Timestamp = time(0);
+        pir.Weight = 0;
+        DB->AddPurchaseItemRecord(pir);
     }
     DB->UpdateDatabaseFile();
+    DB->InitDatabase("ForTest2.osdb");
+    auto all = DB->GetAllPurchaseItemRecord();
+    for (auto each : all) {
+        printf("[!] orderid: %d timestamp: %d name: %s \n",each.OrderId,each.Timestamp,each.Item.ItemName.c_str());
+    }
 }
 
 // 运行程序: Ctrl + F5 或调试 >“开始执行(不调试)”菜单
