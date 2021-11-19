@@ -4,6 +4,10 @@
 #include <string>
 #include <vector>
 #include "GlobalVar.h"
+/*
+	在顾客每次结账前都要新建一个CashierSystem对象
+	通过执行构造方法生成新的订单ID与时间戳
+*/
 class CashierSystem
 {
 private:
@@ -12,7 +16,8 @@ private:
 	int Timestamp;	//当前订单的时间戳
 	void generateOrderId(); //生成当前订单的订单编号
 	void generateTimestamp();	// 生成当前订单的时间戳
-	std::string processId(std::string ItemProcessedId, int &Type, double &Weight);
+	bool CheckCode(const std::string& value, int code);	//对商品ID进行校验
+	std::string processId(const std::string& ItemProcessedId, int &Type, double &Weight);
 public:
 	/*
 		初始化订单的编号和与时间戳等初始信息

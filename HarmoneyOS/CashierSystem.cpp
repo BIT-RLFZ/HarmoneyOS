@@ -6,31 +6,65 @@
 #include "NoImplException.h"
 #include <string>
 #include <algorithm>
-
+#include <ctime>
+#include <cstdlib>
 
 const int COUNT = 0;
 const int WEIGHT = 1;
-//未实现
+//生成商品订单的ID
 void CashierSystem::generateOrderId()
 {
-	throw new NoImplException(__FUNCTION__);
+	OrderId = DB->GetLatestOrderId() + 1;
 }
-//未实现
+//生成时间戳
 void CashierSystem::generateTimestamp()
 {
-	throw new NoImplException(__FUNCTION__);
+	Timestamp = (int)time(0);
 }
 /*
-	该函数功能并未实现完，依赖于开发约定
+	实现校验功能 
+	返回值 bool: true代表通过校验，反之不通过
 */
-std::string CashierSystem::processId(std::string ItemProcessedId, int &Type, double &Weight)
+bool CashierSystem::CheckCode(const std::string& value, int code)
+{
+	int Result = 0;	//初始化
+	int Length = value.length();	//得到字符串长
+	for (int i = 0; i < Length; ++i) {
+		Result ^= value[i] - '0';	//逐位异或
+	}
+	return Result == code;	//校验
+}
+/*
+	处理商品ID得到对应的商品原始ID,商品类型，商品重量
+*/
+std::string CashierSystem::processId(const std::string& ItemProcessedId, int &Type, double &Weight)
 {
 	// TODO: 在此处插入 return 语句
-	throw new NoImplException(__FUNCTION__);
-	std::string ItemId = ItemProcessedId;
+	// 八位商品ID 五位的重量 两位校验位
+	if (ItemProcessedId.length() != 15) {	//ID长度不符
+		throw HarmoneyException("商品ID长度错误!");
+	}
+	size_t start = 0;	//截取子串使用
+	std::string ItemId = ItemProcessedId.substr(start, 8);	//分割出商品原始ID
+	int TmpWeight = stoi(ItemProcessedId.substr(start + 8, 5));	//截取出表示重量的位
+	int code = stoi(ItemProcessedId.substr(start + 13, 2));	//截取出校验码
+	if (!CheckCode(ItemProcessedId.substr(start, 13), code)) {	//如果前面与校验码不匹配，抛异常
+		throw HarmoneyException("商品校验码错误");
+	}
+	if (TmpWeight == 0) {	//重量位均为0，表示该商品类型为COUNT
+		Type = COUNT;
+		Weight = 0.00;
+	}
+	else {	//否则类型为WEIGHT
+		Type = WEIGHT;
+		Weight = 1.0 * TmpWeight / 100;	//计算该商品的重量
+	}
 	return ItemId;
 }
-
+/*
+	构造方法
+	获得新的订单ID与时间戳
+*/
 CashierSystem::CashierSystem()
 {
 	generateOrderId();
@@ -150,7 +184,7 @@ bool CashierSystem::Checkout(std::vector<CPurchaseItemRecord>& CurrentPurchaseLi
 			ItemStorageInfo.WeightRest -= ItemRecord.Weight;
 		}
 		DB->ModifyItemStorageInfo(ItemStorageInfo);	//修改库存
-		Cart.pop_back();	//清楚商品
+		Cart.pop_back();	//清除商品
 	}
 	CPurchaseOrderRecord OrderRecord(OrderId, Timestamp);	//生成订单
 	DB->AddPurchaseOrderRecord(OrderRecord);	//向数据库添加订单
