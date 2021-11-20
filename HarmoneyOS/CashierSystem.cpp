@@ -30,6 +30,9 @@ bool CashierSystem::CheckCode(const std::string& value, int code)
 	int Result = 0;	//初始化
 	int Length = value.length();	//得到字符串长
 	for (int i = 0; i < Length; ++i) {
+		if (value[i] < '0' || value[i] > '9') {
+			throw HarmoneyException("商品ID中存在非数字字符！");
+		}
 		Result ^= value[i] - '0';	//逐位异或
 	}
 	return Result == code;	//校验
@@ -45,9 +48,16 @@ std::string CashierSystem::processId(const std::string& ItemProcessedId, int &Ty
 		throw HarmoneyException("商品ID长度错误!");
 	}
 	size_t start = 0;	//截取子串使用
-	std::string ItemId = ItemProcessedId.substr(start, 8);	//分割出商品原始ID
-	int TmpWeight = stoi(ItemProcessedId.substr(start + 8, 5));	//截取出表示重量的位
-	int code = stoi(ItemProcessedId.substr(start + 13, 2));	//截取出校验码
+	int TmpWeight = 0, code = 0;
+	std::string ItemId;
+	try {
+		ItemId = ItemProcessedId.substr(start, 8);	//分割出商品原始ID
+		TmpWeight = stoi(ItemProcessedId.substr(start + 8, 5));	//截取出表示重量的位
+		code = stoi(ItemProcessedId.substr(start + 13, 2));	//截取出校验码
+	}
+	catch (...) {
+		throw HarmoneyException("商品ID中存在非数字字符！");
+	}
 	if (!CheckCode(ItemProcessedId.substr(start, 13), code)) {	//如果前面与校验码不匹配，抛异常
 		throw HarmoneyException("商品校验码错误");
 	}
