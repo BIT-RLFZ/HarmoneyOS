@@ -162,7 +162,10 @@ private:
 	std::map<std::string, CItemStorageInfo> ItemStorageTable_mp;
 	std::vector<CItemStorageInfo> ItemStorageTable_vec;
 	std::vector<CPurchaseItemRecord> PurchaseItemRecordTable_vec;
+	std::map<int, CPurchaseOrderRecord> PurchaseOrderTable_mp;
+	std::vector<CPurchaseOrderRecord> PurchaseOrderTable_vec;
 	int maxPurchaseItemRecordID;
+	int LatestOrderId;
 
 	void GenerateEmptyDBFile(std::string dbFileName);
 	std::string GetAbstractString(const AbstractString& as);
