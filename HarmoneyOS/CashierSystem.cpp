@@ -11,6 +11,8 @@
 
 const int COUNT = 0;
 const int WEIGHT = 1;
+const int ON = 1;
+const int OFF = 0;
 //生成商品订单的ID
 void CashierSystem::generateOrderId()
 {
@@ -20,6 +22,18 @@ void CashierSystem::generateOrderId()
 void CashierSystem::generateTimestamp()
 {
 	Timestamp = (int)time(0);
+}
+/*
+	初始化订单
+	为其生成订单编号与时间戳
+*/
+void CashierSystem::init()
+{
+	if (STATUS == OFF) {	//如果还没有生成订单
+		generateOrderId();	//生成订单编号
+		generateTimestamp();	//生成时间戳
+		STATUS = ON;	//更改订单状态
+	}
 }
 /*
 	实现校验功能 
@@ -73,12 +87,15 @@ std::string CashierSystem::processId(const std::string& ItemProcessedId, int &Ty
 }
 /*
 	构造方法
-	获得新的订单ID与时间戳
+	初始化基本数据类型
 */
 CashierSystem::CashierSystem()
 {
-	generateOrderId();
-	generateTimestamp();
+	/*generateOrderId();
+	generateTimestamp();*/
+	STATUS = OFF;
+	OrderId = 0;
+	Timestamp = 0;
 }
 /*
 *	该函数还未处理数据库可能抛出的异常！
@@ -90,6 +107,7 @@ CashierSystem::CashierSystem()
 */
 bool CashierSystem::AddItemToCart(const std::string& ItemProcessedId, int cnt)
 {
+	init();
 	int Type = 0;
 	double Weight = 0.0;
 	// 将处理过的Id转换成原来的Id 并得到商品类型，商品重量(如果是按重量计价的商品的话)
@@ -123,6 +141,7 @@ bool CashierSystem::AddItemToCart(const std::string& ItemProcessedId, int cnt)
 */
 bool CashierSystem::RemoveItemFromCart(const std::string& ItemProcessedId)
 {
+	if (STATUS == OFF) return false; //还没有生成订单直接返回false
 	int Type = 0;
 	double Weight = 0.0;
 	std::string ItemId = processId(ItemProcessedId, Type, Weight);	//转换成商品原ID
@@ -144,6 +163,7 @@ bool CashierSystem::RemoveItemFromCart(const std::string& ItemProcessedId)
 */
 double CashierSystem::GetCurrentPrice()
 {
+	if (STATUS == OFF) return 0.0;	//还没有生成订单直接返回0.0
 	double CurrentPrice = 0.0;	//初始化
 	auto ItemRecordIter = Cart.begin();	//vector的迭代器
 	while (ItemRecordIter != Cart.end()) {	//遍历每一个元素
@@ -166,6 +186,7 @@ double CashierSystem::GetCurrentPrice()
 const std::vector<CPurchaseItemRecord>& CashierSystem::GetCurrentPurchaseList()
 {
 	// TODO: 在此处插入 return 语句
+	// 没有生成订单时会返回空购物车
 	return Cart;
 }
 /*
@@ -180,9 +201,14 @@ const std::vector<CPurchaseItemRecord>& CashierSystem::GetCurrentPurchaseList()
 */
 bool CashierSystem::Checkout(std::vector<CPurchaseItemRecord>& CurrentPurchaseList)
 {
+	if (STATUS == OFF) return false;	//没有生成订单时不能结账返回false
 	CurrentPurchaseList = Cart;	// 将购物车列表传递个参数
 	CPurchaseItemRecord ItemRecord;
 	CItemStorageInfo ItemStorageInfo;
+	if (!Cart.empty()) {	//如果购物车非空
+		CPurchaseOrderRecord OrderRecord(OrderId, Timestamp);	//生成订单
+		DB->AddPurchaseOrderRecord(OrderRecord);		//向数据库添加订单
+	}
 	while (!Cart.empty()) {
 		ItemRecord = Cart.back();
 		DB->AddPurchaseItemRecord(ItemRecord);	//添加商品购买记录
@@ -196,7 +222,6 @@ bool CashierSystem::Checkout(std::vector<CPurchaseItemRecord>& CurrentPurchaseLi
 		DB->ModifyItemStorageInfo(ItemStorageInfo);	//修改库存
 		Cart.pop_back();	//清除商品
 	}
-	CPurchaseOrderRecord OrderRecord(OrderId, Timestamp);	//生成订单
-	DB->AddPurchaseOrderRecord(OrderRecord);	//向数据库添加订单
+	STATUS = OFF;	//更改结算状态
 	return true;
 }

@@ -14,8 +14,10 @@ private:
 	std::vector<CPurchaseItemRecord> Cart;	// 购物车，用vector记录
 	int OrderId;	// 当前订单的编号
 	int Timestamp;	//当前订单的时间戳
+	int STATUS;		//订单的结账状态 ON 表示还未结账 OFF 表示结账完成
 	void generateOrderId(); //生成当前订单的订单编号
 	void generateTimestamp();	// 生成当前订单的时间戳
+	void init();	//初始化订单状态
 	bool CheckCode(const std::string& value, int code);	//对商品ID进行校验
 	std::string processId(const std::string& ItemProcessedId, int &Type, double &Weight);
 public:
