@@ -4,6 +4,7 @@
 #include "CPurchaseOrderRecord.h"
 #include <string>
 #include <vector>
+#include "GlobalVar.h"
 struct SingleOrder {//每一份订单里有价值的信息
     double OrderProfit;//订单总利润
     double OrderCost;//订单总价格
@@ -29,8 +30,9 @@ class ItemManager
 private:
     int TotalMonthCount; //到现在为止几个月了
     std::vector <OrderYouWannaKnow> FinancialList; //保存每个月的订单中的有价值的信息
-    std::vector <SingleOrder> Orders; //存储全部订单
-    int TimestampConvertToMonthNumber(const int& Timestamp);//时间戳转换
+    std::vector <SingleOrder> Orders; //存储全部订单ZZ
+    std::vector <CItemStorageInfo> Goods; //存储全部货物YY
+    int TimestampConvertToMonthNumber(const int& Timestamp);//时间戳转换，学pair<int, int> a;
 
 public:
     CItemStorageInfo ReceiveAction();
@@ -38,7 +40,7 @@ public:
     bool AddItem(const CItemStorageInfo& NewItem);//返回商品类
     bool ModifyItem(const CItemStorageInfo& NewItem);//修改的是类
     bool DeleteItem(std::string ItemId);//输入商品编号删除
-    std::vector<CItemStorageInfo>& GetAllItemStorageInfo();//获取仓库里所有的商品信息
+    std::vector<CItemStorageInfo>& GetAllItemStorageInfo();//YY获取仓库里所有的商品信息, 对接rbh
     //以上是对商品的增删改查
 
     //以下是对订单信息的处理
@@ -48,7 +50,7 @@ public:
       -> 根据订单信息按照时间戳分组，获得每个月的财务信息，并保留有价值的(3)
       -> 将有价值的信息综合一下(4)
     */
-    std::vector<CPurchaseOrderRecord>& GetAllPurchaseOrderRecord();//(1)
+    std::vector<CPurchaseOrderRecord>& GetAllPurchaseOrderRecord();//(1)ZZ
 
     bool GetProfit(const std::vector<CItemStorageInfo>& ItemList);//(2)
 
