@@ -3,7 +3,9 @@
 #include "Database.h"
 #include <string>
 #include <vector>
-#include "GlobalVar.h"
+
+extern Database* DB;
+
 /*
 	在顾客每次结账前都要新建一个CashierSystem对象
 	通过执行构造方法生成新的订单ID与时间戳

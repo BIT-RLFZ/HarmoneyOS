@@ -225,3 +225,5 @@ bool CashierSystem::Checkout(std::vector<CPurchaseItemRecord>& CurrentPurchaseLi
 	STATUS = OFF;	//更改结算状态
 	return true;
 }
+
+CashierSystem* cashierSys = new CashierSystem(); // 给全局用

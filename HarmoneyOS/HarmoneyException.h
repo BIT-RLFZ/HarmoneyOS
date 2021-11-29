@@ -13,7 +13,7 @@ public:
 	HarmoneyException(const char* Message) {
 		ExceptionMessage = Message;
 	}
-	std::string& GetMessage() {
+	std::string& GetExceptionMessage() {
 		return ExceptionMessage;
 	}
 };

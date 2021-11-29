@@ -2,9 +2,10 @@
 #include "CItemStorageInfo.h"
 #include "CPurchaseItemRecord.h"
 #include "CPurchaseOrderRecord.h"
+#include "Database.h"
 #include <string>
 #include <vector>
-#include "GlobalVar.h"
+extern Database* DB;
 struct SingleOrder {//每一份订单里有价值的信息
     double OrderProfit;//订单总利润
     double OrderCost;//订单总价格

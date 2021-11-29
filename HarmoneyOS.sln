@@ -7,6 +7,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HarmoneyOS", "HarmoneyOS\Ha
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HarmoneyOSTest", "HarmoneyOSTest\HarmoneyOSTest.vcxproj", "{1031E919-192F-499B-A933-23493FC7A73B}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HarmoneyOSDll", "HarmoneyOSDll\HarmoneyOSDll.vcxproj", "{065BF314-5D62-414B-80CC-EF7FD7555CE2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -31,6 +33,14 @@ Global
 		{1031E919-192F-499B-A933-23493FC7A73B}.Release|x64.Build.0 = Release|x64
 		{1031E919-192F-499B-A933-23493FC7A73B}.Release|x86.ActiveCfg = Release|Win32
 		{1031E919-192F-499B-A933-23493FC7A73B}.Release|x86.Build.0 = Release|Win32
+		{065BF314-5D62-414B-80CC-EF7FD7555CE2}.Debug|x64.ActiveCfg = Debug|x64
+		{065BF314-5D62-414B-80CC-EF7FD7555CE2}.Debug|x64.Build.0 = Debug|x64
+		{065BF314-5D62-414B-80CC-EF7FD7555CE2}.Debug|x86.ActiveCfg = Debug|Win32
+		{065BF314-5D62-414B-80CC-EF7FD7555CE2}.Debug|x86.Build.0 = Debug|Win32
+		{065BF314-5D62-414B-80CC-EF7FD7555CE2}.Release|x64.ActiveCfg = Release|x64
+		{065BF314-5D62-414B-80CC-EF7FD7555CE2}.Release|x64.Build.0 = Release|x64
+		{065BF314-5D62-414B-80CC-EF7FD7555CE2}.Release|x86.ActiveCfg = Release|Win32
+		{065BF314-5D62-414B-80CC-EF7FD7555CE2}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

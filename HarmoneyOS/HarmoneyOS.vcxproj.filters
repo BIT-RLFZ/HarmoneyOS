@@ -74,8 +74,5 @@
     <ClInclude Include="HarmoneyException.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="GlobalVar.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
   </ItemGroup>
 </Project>

@@ -6,7 +6,8 @@
 #include <vector>
 #include "CItemStorageInfo.h"
 #include "CItemInfo.h"
-#include "GlobalVar.h"
+#include "Database.h"
+extern Database* DB;
 
 using namespace std;
 
