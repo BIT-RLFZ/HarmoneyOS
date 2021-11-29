@@ -19,7 +19,7 @@ int stamp_to_standard(int stampTime)
 	struct tm tm;
 	char s[100];
 	Times standard;
-	tm = *localtime(&tick);
+	localtime_s(&tm,&tick);
 	strftime(s, sizeof(s), "%Y-%m-%d %H:%M:%S", &tm);//其中s是一个字符串，表示着时间戳转换过来的真实时间
 	//	printf("%s\n",  s); 
 	int Y1 = 0, M1 = 0, D1 = 0;
