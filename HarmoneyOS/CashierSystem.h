@@ -56,5 +56,10 @@ public:
 		返回值：结账相关操作是否成功
 	*/
 	bool Checkout(std::vector<CPurchaseItemRecord>& CurrentPurchaseList);
+	/*
+		返回当前订单的编号
+		如果已结账则返回0
+	*/
+	int GetCurrentOrderId();
 };
 

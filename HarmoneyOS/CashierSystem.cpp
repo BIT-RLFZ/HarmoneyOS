@@ -225,5 +225,14 @@ bool CashierSystem::Checkout(std::vector<CPurchaseItemRecord>& CurrentPurchaseLi
 	STATUS = OFF;	//更改结算状态
 	return true;
 }
+/*
+	返回当前订单的编号
+	如果已结账则返回0
+*/
+int CashierSystem::GetCurrentOrderId()
+{
+	if (STATUS == ON) return OrderId;
+	return 0;
+}
 
 CashierSystem* cashierSys = new CashierSystem(); // 给全局用
