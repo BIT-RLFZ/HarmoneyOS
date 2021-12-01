@@ -17,7 +17,7 @@ extern Database* DB;
 
 string lastErrorInfo = "";
 
-const string BuildTime = (string)__DATE__ + __TIME__;
+const string BuildTime = (string)__DATE__ + " " + __TIME__;
 
 struct CItemInfoExport {
 	const char* ItemName;
@@ -158,4 +158,14 @@ EXPORT bool __stdcall HOS_CS_Checkout() {
 		lastErrorInfo = ex.GetExceptionMessage();
 		return false;
 	}
+}
+
+string testString = "ÖÐÎÄ!!!";
+
+EXPORT void __stdcall HOS_test(CItemInfoExport& ret) {
+	ret.Cost = 100;
+	ret.ItemId = testString.c_str();
+	ret.ItemName = testString.c_str();
+	ret.ItemType = 123;
+	ret.Price = 1234;
 }
