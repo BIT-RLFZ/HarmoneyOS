@@ -58,60 +58,60 @@ EXPORT const char* __stdcall HOS_get_lastError() {
 	return lastErrorInfo.c_str();
 }
 
-EXPORT bool __stdcall HOS_DB_InitDatabase(const char* dbFileName) {
+EXPORT int __stdcall HOS_DB_InitDatabase(const char* dbFileName) {
 	try {
 		DB->InitDatabase(dbFileName);
-		return true;
+		return 1;
 	}
 	catch (HarmoneyException ex) {
 		lastErrorInfo = (string)__FUNCTION__ + ": " + ex.GetExceptionMessage();
-		return false;
+		return 0;
 	}
 }
 
-EXPORT bool __stdcall HOS_CS_AddItemToCart(const char* ItemProcessedId, int cnt) {
+EXPORT int __stdcall HOS_CS_AddItemToCart(const char* ItemProcessedId, int cnt) {
 	try {
 		cashierSys->AddItemToCart(ItemProcessedId, cnt);
-		return true;
+		return 1;
 	}
 	catch (HarmoneyException ex) {
 		lastErrorInfo = (string)__FUNCTION__ + ": " + ex.GetExceptionMessage();
-		return false;
+		return 0;
 	}
 }
 
-EXPORT bool __stdcall HOS_CS_RemoveItemFromCart(const char* ItemProcessedId) {
+EXPORT int __stdcall HOS_CS_RemoveItemFromCart(const char* ItemProcessedId) {
 	try {
 		cashierSys->RemoveItemFromCart(ItemProcessedId);
-		return true;
+		return 1;
 	}
 	catch (HarmoneyException ex) {
 		lastErrorInfo = (string)__FUNCTION__ + ": " + ex.GetExceptionMessage();
-		return false;
+		return 0;
 	}
 }
 
-EXPORT bool __stdcall HOS_CS_GetCurrentPrice(double* pResult) {
+EXPORT int __stdcall HOS_CS_GetCurrentPrice(double* pResult) {
 	try {
 		*pResult = cashierSys->GetCurrentPrice();
-		return true;
+		return 1;
 	}
 	catch (HarmoneyException ex) {
 		*pResult = 0;
 		lastErrorInfo = (string)__FUNCTION__ + ": " + ex.GetExceptionMessage();
-		return false;
+		return 0;
 	}
 }
 
-EXPORT bool __stdcall HOS_CS_GetCurrentPurchaseListSize(int* pResult) {
+EXPORT int __stdcall HOS_CS_GetCurrentPurchaseListSize(int* pResult) {
 	try {
 		*pResult = cashierSys->GetCurrentPurchaseList().size();
-		return true;
+		return 1;
 	}
 	catch (HarmoneyException ex) {
 		*pResult = 0;
 		lastErrorInfo = (string)__FUNCTION__ + ": " + ex.GetExceptionMessage();
-		return false;
+		return 0;
 	}
 }
 
@@ -127,11 +127,11 @@ void CopyPurchaseItemRecord(CPurchaseItemRecordExport& res, CPurchaseItemRecord&
 	res.Weight = src.Weight;
 }
 
-EXPORT bool __stdcall HOS_CS_GetCurrentPurchaseList(CPurchaseItemRecordExport* pList, int listSize) {
+EXPORT int __stdcall HOS_CS_GetCurrentPurchaseList(CPurchaseItemRecordExport* pList, int listSize) {
 	// 必须保证pList内存空间充足，大于等于ListSize
-	if (listSize < cashierSys->GetCurrentPurchaseList().size()) {
+	if (listSize < (int)cashierSys->GetCurrentPurchaseList().size()) {
 		lastErrorInfo = __FUNCTION__": 给定的列表空间不足！";
-		return false;
+		return 0;
 	}
 	try {
 		auto list = cashierSys->GetCurrentPurchaseList();
@@ -140,23 +140,23 @@ EXPORT bool __stdcall HOS_CS_GetCurrentPurchaseList(CPurchaseItemRecordExport* p
 			CopyPurchaseItemRecord(cur, list[i]);
 			*(pList + i) = cur;
 		}
-		return true;
+		return 1;
 	}
 	catch (HarmoneyException ex) {
 		lastErrorInfo = ex.GetExceptionMessage();
-		return false;
+		return 0;
 	}
 }
 vector<CPurchaseItemRecord> tmp;
 
-EXPORT bool __stdcall HOS_CS_Checkout() {
+EXPORT int __stdcall HOS_CS_Checkout() {
 	try {
 		cashierSys->Checkout(tmp);
-		return true;
+		return 1;
 	}
 	catch (HarmoneyException ex) {
 		lastErrorInfo = ex.GetExceptionMessage();
-		return false;
+		return 0;
 	}
 }
 
