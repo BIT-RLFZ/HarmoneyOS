@@ -4,24 +4,13 @@
 #include <iostream>
 ItemManager* itemMgr = new ItemManager(); // 给全局用
 //时间戳（北京时间）
-typedef struct times//这是时间戳中转换过来的时间
-{
-	int Year;
-	int Mon;
-	int Day;
-	int Hour;
-	int Min;
-	int Second;
-}Times;
 int stamp_to_standard(int stampTime)
 {
 	time_t tick = (time_t)stampTime;
 	struct tm tm;
 	char s[100];
-	Times standard;
 	localtime_s(&tm,&tick);
 	strftime(s, sizeof(s), "%Y-%m-%d %H:%M:%S", &tm);//其中s是一个字符串，表示着时间戳转换过来的真实时间
-	//	printf("%s\n",  s); 
 	int Y1 = 0, M1 = 0, D1 = 0;
 	Y1 += (s[0] - '0') * 1000;
 	Y1 += (s[1] - '0') * 100;
