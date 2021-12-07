@@ -66,7 +66,8 @@ void ItemManager::Prework(){
 	ItemList = DB->GetAllPurchaseItemRecord() ;
 	Goods = DB->GetAllItemStorageInfo() ;
 	for (auto t : ItemList)
-		MaxId = max(MaxId, t.OrderId) ;
+		MaxId = max(MaxId, t.OrderId) ;	
+	Null_Order = SingleOrder(0, 0, 0, 0) ;
 	for (int i = 0 ; i <= MaxId ; ++ i)
 		Orders.push_back(Null_Order) ;
 	for (CPurchaseItemRecord t : ItemList){
