@@ -19,13 +19,7 @@ struct SingleOrder {//每一份订单里有价值的信息
     double OrderCost;//订单总价格
     int WhichMonth ;
     int OrderId ;
-    SingleOrder (){
-      OrderProfit = 0.0 ;
-      OrderCost = 0.0 ;
-      WhichMonth = 0 ;
-      OrderId = 0 ;
-    }
-}NullOrder ;
+} ;
 
 struct OrderYouWannaKnow {//每个月的财务报表，记录当月订单里有价值的信息
     SingleOrder MaxProfit;//利润

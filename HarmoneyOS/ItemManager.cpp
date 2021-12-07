@@ -60,7 +60,7 @@ bool comp_profit(const SingleOrder & a, const SingleOrder & b){
 bool comp_timeorder(const SingleOrder & a, const SingleOrder & b){
 	return a.WhichMonth == b.WhichMonth ? a.OrderId < b.OrderId : a.WhichMonth < b.WhichMonth ;
 }
-
+SingleOrder NullOrder ;
 void ItemManager::Prework(){
 	MaxId = 0 ; MaxMonth = 0 ;
 	ItemList = DB->GetAllPurchaseItemRecord() ;
