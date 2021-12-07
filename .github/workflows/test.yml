@@ -1,0 +1,28 @@
+name: UnitTestForHarmoneyOS
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  release:
+    types: released
+
+jobs:
+  build:
+    name: UnitTest
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Test x86 Debug
+        shell: pwsh
+        run: |
+          .\UnitTest.ps1 x86
+
+      - name: Test x64 Debug
+        shell: pwsh
+        run: |
+          .\UnitTest.ps1 x64

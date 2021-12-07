@@ -1,0 +1,15 @@
+LIBRARY "HarmoneyOSCore"
+DESCRIPTION 'HarmoneyOSCoreLibrary'
+EXPORTS
+	HOS_GetBuildTime
+	HOS_SaveAndExit
+	HOS_clear_lastError
+	HOS_get_lastError
+	HOS_DB_InitDatabase
+	HOS_CS_AddItemToCart
+	HOS_CS_RemoveItemFromCart
+	HOS_CS_GetCurrentPrice
+	HOS_CS_GetCurrentPurchaseListSize
+	HOS_CS_GetCurrentPurchaseList
+	HOS_CS_Checkout
+	HOS_test
