@@ -66,7 +66,7 @@ void ItemManager::Prework(){
 	ItemList = DB->GetAllPurchaseItemRecord() ;
 	Goods = DB->GetAllItemStorageInfo() ;
 	for (auto t : ItemList)
-		MaxId = max(MaxId, t.OrderId) ;	
+		MaxId = max(MaxId, t.OrderId) ;
 	Null_Order = SingleOrder(0, 0, 0, 0) ;
 	for (int i = 0 ; i <= MaxId ; ++ i)
 		Orders.push_back(Null_Order) ;
@@ -95,6 +95,7 @@ void ItemManager::Prework(){
 		if (comp_profit(T1, Orders[i])) T1 = Orders[i] ;
 		if (comp_cost(T2, Orders[i])) T2 = Orders[i] ;
 	}
+	return ;
 }
 
 bool ItemManager::ShowPurchaseRecord(){
@@ -110,6 +111,7 @@ bool ItemManager::ShowPurchaseRecord(){
 }
 bool ItemManager::ShowAllItemRecord(){
 	int n = Goods.size() ; //鸽了鸽了
+	return 0 ;
 }
 OrderYouWannaKnow ItemManager::MonthCheck(int x) { return MonthlyList[x] ; }
 void ItemManager::GetRate(){
@@ -120,6 +122,7 @@ void ItemManager::GetRate(){
 		MonthlyRate[i].second = (MonthlyList[i].MaxProfit.OrderProfit
 		 										 / MonthlyList[i - 1].MaxProfit.OrderProfit) - 1.0 ;
 	}
+	return ;
 }
 bool ItemManager::CreateMonthlyFinancialStatement(){
 	Prework() ;
