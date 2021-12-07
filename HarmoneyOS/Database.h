@@ -12,7 +12,7 @@
 #include <set>
 
 /*
-	数据库文件结构: designed by RBH
+	锟斤拷锟捷匡拷锟侥硷拷锟结构: designed by RBH
 
 	=== Header ===
 
@@ -28,9 +28,9 @@
 */
 struct DatabaseHeader {
 	char magicChar[11]; //HarmoneyDB
-	int timestamp; //数据库最后更新时间
-	int StringPoolOffset; //字符串池的文件偏移
-	int StringPoolLength; //字符串池的长度
+	int timestamp; //锟斤拷锟捷匡拷锟斤拷锟斤拷锟斤拷锟斤拷时锟斤拷
+	int StringPoolOffset; //锟街凤拷锟斤拷锟截碉拷锟侥硷拷偏锟斤拷
+	int StringPoolLength; //锟街凤拷锟斤拷锟截的筹拷锟斤拷
 	int AItemInfoPoolOffset;
 	int AItemInfoCount;
 	int AItemStorageInfoPoolOffset;
@@ -45,7 +45,7 @@ struct AbstractString {
 	int length; // string length
 };
 struct AbstractItemInfo {
-	int ItemDatabaseID; // 在数据库存储时分配的UID
+	int ItemDatabaseID; // 锟斤拷锟斤拷锟捷匡拷锟芥储时锟斤拷锟斤拷锟斤拷UID
 	AbstractString ItemName; // Get From StringPool
 	AbstractString ItemId; // Get From StringPool
 	double Cost;
@@ -53,15 +53,15 @@ struct AbstractItemInfo {
 	int ItemType;
 };
 struct AbstractItemStorageInfo {
-	int Item; // 查ItemInfo表，找到ItemDatabaseID为Item的项目即为此项
+	int Item; // 锟斤拷ItemInfo锟斤拷锟斤拷锟揭碉拷ItemDatabaseID为Item锟斤拷锟斤拷目锟斤拷为锟斤拷锟斤拷
 	double WeightRest;
 	int CountRest;
-	int Timestamp; //录入时间
+	int Timestamp; //录锟斤拷时锟斤拷
 	bool IsDelete;
 };
 
 struct AbstractPurchaseItemRecord {
-	int Item; // 查ItemInfo表，找到ItemDatabaseID为Item的项目即为此项
+	int Item; // 锟斤拷ItemInfo锟斤拷锟斤拷锟揭碉拷ItemDatabaseID为Item锟斤拷锟斤拷目锟斤拷为锟斤拷锟斤拷
 	double Weight;
 	int Count;
 	int Timestamp;
@@ -76,79 +76,79 @@ public:
 		gFileData = NULL;
 		gStringPool = NULL;
 	}
-	
+
 	~Database() {
 		try{
 			UpdateDatabaseFile();
 		}
 		catch (NoImplException ex) {};
-		
+
 		if (gFileData) delete[] gFileData;
 		if (gStringPool) delete[] gStringPool;
 	}
 	/*
-		初始化数据库，读入数据库文件数据并解析
-		文件不存在时会自动初始化一个新的数据库文件
+		锟斤拷始锟斤拷锟斤拷锟捷库，锟斤拷锟斤拷锟斤拷锟捷匡拷锟侥硷拷锟斤拷锟捷诧拷锟斤拷锟斤拷
+		锟侥硷拷锟斤拷锟斤拷锟斤拷时锟斤拷锟皆讹拷锟斤拷始锟斤拷一锟斤拷锟铰碉拷锟斤拷锟捷匡拷锟侥硷拷
 	*/
 	bool InitDatabase(std::string dbFileName="Harmoney.osdb");
 	/*
-		查询指定ItemId商品的商品信息，返回类CItemStorageInfo
-		可能异常：HarmoneyException
-			 在：无法找到指定商品ID时
+		锟斤拷询指锟斤拷ItemId锟斤拷品锟斤拷锟斤拷品锟斤拷息锟斤拷锟斤拷锟斤拷锟斤拷CItemStorageInfo
+		锟斤拷锟斤拷锟届常锟斤拷HarmoneyException
+			 锟节ｏ拷锟睫凤拷锟揭碉拷指锟斤拷锟斤拷品ID时
 	*/
 	CItemStorageInfo QueryItemStorageInfo(std::string ItemId);
 	/*
-		修改指定ItemId商品的商品信息，返回bool
-		可能异常：HarmoneyException
-			 在：无法找到指定商品ID时
+		锟睫革拷指锟斤拷ItemId锟斤拷品锟斤拷锟斤拷品锟斤拷息锟斤拷锟斤拷锟斤拷bool
+		锟斤拷锟斤拷锟届常锟斤拷HarmoneyException
+			 锟节ｏ拷锟睫凤拷锟揭碉拷指锟斤拷锟斤拷品ID时
 	*/
 	bool ModifyItemStorageInfo(CItemStorageInfo& StorageInfo);
 	/*
-		将指定商品加入数据库，已经存在的商品会被合并，合并方法是库存直接相加，而新的对象覆盖进价售价数据
+		锟斤拷指锟斤拷锟斤拷品锟斤拷锟斤拷锟斤拷锟捷库，锟窖撅拷锟斤拷锟节碉拷锟斤拷品锟结被锟较诧拷锟斤拷锟较诧拷锟斤拷锟斤拷锟角匡拷锟斤拷直锟斤拷锟斤拷锟接ｏ拷锟斤拷锟铰的讹拷锟襟覆盖斤拷锟斤拷锟桔硷拷锟斤拷锟斤拷
 	*/
 	bool AddItemStorageInfo(CItemStorageInfo& StorageInfo);
 	/*
-		查询数据库中所有的商品库存信息，返回商品信息的列表
-		注意！！！，已经下架(删除)的物品依然会返回，注意判断 IsDelete
+		锟斤拷询锟斤拷锟捷匡拷锟斤拷锟斤拷锟叫碉拷锟斤拷品锟斤拷锟斤拷锟斤拷息锟斤拷锟斤拷锟斤拷锟斤拷品锟斤拷息锟斤拷锟叫憋拷
+		注锟解！锟斤拷锟斤拷锟斤拷锟窖撅拷锟铰硷拷(删锟斤拷)锟斤拷锟斤拷品锟斤拷然锟结返锟截ｏ拷注锟斤拷锟叫讹拷 IsDelete
 	*/
 	std::vector<CItemStorageInfo>& GetAllItemStorageInfo();
 	/*
-		将指定商品的Delete状态设置成true，表示商品已经下架
-		可能异常：HarmoneyException
-			 在：无法找到指定商品ID时
+		锟斤拷指锟斤拷锟斤拷品锟斤拷Delete状态锟斤拷锟矫筹拷true锟斤拷锟斤拷示锟斤拷品锟窖撅拷锟铰硷拷
+		锟斤拷锟斤拷锟届常锟斤拷HarmoneyException
+			 锟节ｏ拷锟睫凤拷锟揭碉拷指锟斤拷锟斤拷品ID时
 	*/
 	bool DeleteItemStorageInfo(std::string ItemId);
 
 	/*
-		添加一个商品的购买记录，注意同一个订单中可能会生成多个商品购买记录，因为可能有多个商品被购买
+		锟斤拷锟斤拷一锟斤拷锟斤拷品锟侥癸拷锟斤拷锟斤拷录锟斤拷注锟斤拷同一锟斤拷锟斤拷锟斤拷锟叫匡拷锟杰伙拷锟斤拷锟缴讹拷锟斤拷锟斤拷品锟斤拷锟斤拷锟斤拷录锟斤拷锟斤拷为锟斤拷锟斤拷锟叫讹拷锟斤拷锟斤拷品锟斤拷锟斤拷锟斤拷
 	*/
 	bool AddPurchaseItemRecord(CPurchaseItemRecord& PurchaseItemRecord);
 	/*
-		获取数据库中所有商品购买记录
+		锟斤拷取锟斤拷锟捷匡拷锟斤拷锟斤拷锟斤拷锟斤拷品锟斤拷锟斤拷锟斤拷录
 	*/
 	std::vector<CPurchaseItemRecord>& GetAllPurchaseItemRecord();
 
 	/*
-		根据订单的编号查询指定订单的消费时间
+		锟斤拷锟捷讹拷锟斤拷锟侥憋拷锟脚诧拷询指锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷时锟斤拷
 	*/
 	CPurchaseOrderRecord QueryPurchaseOrderRecord(int OrderId);
 	/*
-		向数据库加入一条订单记录
+		锟斤拷锟斤拷锟捷匡拷锟斤拷锟斤拷一锟斤拷锟斤拷锟斤拷锟斤拷录
 	*/
 	bool AddPurchaseOrderRecord(CPurchaseOrderRecord& PurchaseRecord);
 	/*
-		获取最后一条订单的编号，用于新的订单生成时订单编号，直接用这个函数返回值+1即可
-		没有订单时返回0
+		锟斤拷取锟斤拷锟斤拷一锟斤拷锟斤拷锟斤拷锟侥憋拷锟脚ｏ拷锟斤拷锟斤拷锟铰的讹拷锟斤拷锟斤拷锟斤拷时锟斤拷锟斤拷锟斤拷锟脚ｏ拷直锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷值+1锟斤拷锟斤拷
+		没锟叫讹拷锟斤拷时锟斤拷锟斤拷0
 	*/
 	int GetLatestOrderId();
 	/*
-		查询数据库中所有的订单记录
+		锟斤拷询锟斤拷锟捷匡拷锟斤拷锟斤拷锟叫的讹拷锟斤拷锟斤拷录
 	*/
 	std::vector<CPurchaseOrderRecord>& GetAllPurchaseOrderRecord();
 	/*
-		把当前内存中的数据库文件存储到文件中
-		由于每次存储可能会消耗一定的时间(<100ms)，建议在执行完一系列修改操作后再调用这条语句
-		注意：在程序退出时会自动执行这条语句，但是为了防止意外，请每次操作数据库后都调用此语句
+		锟窖碉拷前锟节达拷锟叫碉拷锟斤拷锟捷匡拷锟侥硷拷锟芥储锟斤拷锟侥硷拷锟斤拷
+		锟斤拷锟斤拷每锟轿存储锟斤拷锟杰伙拷锟斤拷锟斤拷一锟斤拷锟斤拷时锟斤拷(<100ms)锟斤拷锟斤拷锟斤拷锟斤拷执锟斤拷锟斤拷一系锟斤拷锟睫改诧拷锟斤拷锟斤拷锟劫碉拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷
+		注锟解：锟节筹拷锟斤拷锟剿筹拷时锟斤拷锟皆讹拷执锟斤拷锟斤拷锟斤拷锟斤拷锟戒，锟斤拷锟斤拷为锟剿凤拷止锟斤拷锟解，锟斤拷每锟轿诧拷锟斤拷锟斤拷锟捷匡拷锟襟都碉拷锟矫达拷锟斤拷锟斤拷
 	*/
 	bool UpdateDatabaseFile();
 private:
@@ -171,4 +171,3 @@ private:
 	std::string GetAbstractString(const AbstractString& as);
 	void LoadBinaryDBFile(std::string dbFileName);
 };
-
