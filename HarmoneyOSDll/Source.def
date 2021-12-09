@@ -13,3 +13,8 @@ EXPORTS
 	HOS_CS_GetCurrentPurchaseList
 	HOS_CS_Checkout
 	HOS_test
+	HOS_DBG_AddExampleProducts
+	HOS_Mm_GetItemInfoStruSize
+	HOS_Mm_GetItemRecordInfoStruSize
+	HOS_Mm_Allocate
+	HOS_Mm_DeleteMem
