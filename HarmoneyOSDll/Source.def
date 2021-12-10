@@ -18,3 +18,4 @@ EXPORTS
 	HOS_Mm_GetItemRecordInfoStruSize
 	HOS_Mm_Allocate
 	HOS_Mm_DeleteMem
+	HOS_DB_QueryProduct

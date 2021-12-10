@@ -71,6 +71,22 @@ EXPORT int __stdcall HOS_DB_InitDatabase(const char* dbFileName) {
 	}
 }
 
+void CopyItemInfo(CItemInfoExport& res, CItemInfo& src);
+
+EXPORT int __stdcall HOS_DB_QueryProduct(const char* ItemProcessedId, CItemInfoExport* ret) {
+	try {
+		string processedid = ItemProcessedId;
+		string itemID = processedid.substr(0, 8);
+		auto res = DB->QueryItemStorageInfo(itemID);
+		CopyItemInfo(*ret, res.Item);
+		return 1;
+	}
+	catch (HarmoneyException ex) {
+		lastErrorInfo = (string)__FUNCTION__ + ": " + ex.GetExceptionMessage();
+		return 0;
+	}
+}
+
 EXPORT int __stdcall HOS_CS_AddItemToCart(const char* ItemProcessedId, int cnt) {
 	try {
 		cashierSys->AddItemToCart(ItemProcessedId, cnt);
@@ -119,6 +135,24 @@ EXPORT int __stdcall HOS_CS_GetCurrentPurchaseListSize(int* pResult) {
 
 map<string, char*> mp;
 int cnt = 0;
+
+void CopyItemInfo(CItemInfoExport& res, CItemInfo& src) {
+	if (!mp.count(src.ItemName)) {
+		char* buf = new char[src.ItemName.size()];
+		strcpy_s(buf, 999999, src.ItemName.c_str());
+		mp[src.ItemName] = buf;
+	}
+	if (!mp.count(src.ItemId)) {
+		char* buf = new char[src.ItemId.size()];
+		strcpy_s(buf, 999999, src.ItemId.c_str());
+		mp[src.ItemId] = buf;
+	}
+	res.ItemName = mp[src.ItemName];
+	res.ItemId = mp[src.ItemId];
+	res.Cost = src.Cost;
+	res.Price = src.Price;
+	res.ItemType = src.ItemType;
+}
 
 void CopyPurchaseItemRecord(CPurchaseItemRecordExport& res, CPurchaseItemRecord& src) {
 	if (!mp.count(src.Item.ItemName)) {
