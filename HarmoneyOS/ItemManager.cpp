@@ -37,7 +37,14 @@ int stamp_to_standard(int stampTime){
 int ItemManager::TimestampConvertToMonthNumber(const int& Timestamp){//时间戳转换成第几个月
 	return stamp_to_standard(Timestamp);//这里调用了时间戳转换成真实日期，并返回是第几个月
 }//今后如果想换成年度统计的话，可以直接把月份-1除以12然后加1变成第几年，第一年是第一年（不是第零年）
-
+Timeacc ItemManager::TimestampConvertToYearAndSeason(const int& Timestamp) {//结构体的Timeacc类型返回了对应时间戳的年份加季度
+	int totmonth = stamp_to_standard(Timestamp);
+	int year = (totmonth - 1) / 12;
+	int season = ((totmonth - year * 12) - 1) / 3;
+	Timeacc acc;
+	acc.year = year + 1970; acc.season = season + 1;//返回的是真实的对应年份和季度，比如123月是1季度；
+	return acc;
+}
 bool ItemManager::AddItem(CItemStorageInfo NewItem){
 	return DB->AddItemStorageInfo(NewItem);
 }

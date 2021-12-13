@@ -13,7 +13,11 @@
 #include <utility>
 
 extern Database* DB;
-
+struct Timeacc//结构体的Timeacc类型返回了对应时间戳的年份加季度
+{
+    int year;
+    int season;
+};
 struct SingleOrder {//每一份订单里有价值的信息
     double OrderProfit;//订单总利润
     double OrderCost;//订单总价格
@@ -39,6 +43,7 @@ private:
     std::vector <SingleOrder> Orders; //存储全部订单ZZ
     std::vector <CItemStorageInfo> Goods; //存储全部货物YY
     int TimestampConvertToMonthNumber(const int& Timestamp);//时间戳转换，学pair<int, int> a;
+    Timeacc TimestampConvertToYearAndSeason(const int& Timestamp);//时间转换成年份和对应的季度
 public:
     CItemStorageInfo ReceiveAction();
 
