@@ -3,6 +3,7 @@
 #include "../HarmoneyOS/ItemManager.h"
 #include "../HarmoneyOS/CashierSystem.h"
 #include <string>
+#include <sstream>
 #include <set>
 
 using namespace std;
@@ -263,4 +264,27 @@ EXPORT int __stdcall HOS_Mm_Allocate(int size) {
 
 EXPORT void __stdcall HOS_Mm_DeleteMem(void* address) {
 	delete address;
+}
+
+EXPORT int __stdcall HOS_DBG_LoadExampleProducts(const char* productTxt) {
+	stringstream ssm(productTxt);
+	string productId, productName;
+	double cost, price;
+	int type;
+	int cnt = 0;
+	while (ssm >> productId >> productName >> cost >> price >> type) {
+		cnt++;
+		CItemStorageInfo cur;
+		cur.Item.Cost = cost;
+		cur.Item.ItemId = productId;
+		cur.Item.ItemName = productName;
+		cur.Item.ItemType = type;
+		cur.Item.Price = price;
+		cur.IsDelete = false;
+		cur.CountRest = cur.Item.ItemType ? 0 : 100;
+		cur.Timestamp = time(0);
+		cur.WeightRest = cur.Item.ItemType ? 100 : 0;
+		DB->AddItemStorageInfo(cur);
+	}
+	return cnt;
 }
