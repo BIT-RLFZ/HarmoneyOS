@@ -288,3 +288,91 @@ EXPORT int __stdcall HOS_DBG_LoadExampleProducts(const char* productTxt) {
 	}
 	return cnt;
 }
+
+EXPORT int __stdcall HOS_DB_GetItemCountRest(const char* productId) {
+	try {
+		auto res = DB->QueryItemStorageInfo(productId);
+		return res.CountRest;
+	}
+	catch (HarmoneyException ex) {
+		lastErrorInfo = ex.GetExceptionMessage();
+		return 0;
+	}
+}
+
+EXPORT double __stdcall HOS_DB_GetItemWeightRest(const char* productId) {
+	try {
+		auto res = DB->QueryItemStorageInfo(productId);
+		return res.WeightRest;
+	}
+	catch (HarmoneyException ex) {
+		lastErrorInfo = ex.GetExceptionMessage();
+		return 0;
+	}
+}
+
+EXPORT int __stdcall HOS_DB_SetItemCountRest(const char* productId, int val) {
+	try {
+		auto res = DB->QueryItemStorageInfo(productId);
+		res.CountRest = val;
+		DB->ModifyItemStorageInfo(res);
+		return true;
+	}
+	catch (HarmoneyException ex) {
+		lastErrorInfo = ex.GetExceptionMessage();
+		return 0;
+	}
+}
+
+EXPORT int __stdcall HOS_DB_SetItemWeightRest(const char* productId,double val) {
+	try {
+		auto res = DB->QueryItemStorageInfo(productId);
+		res.WeightRest = val;
+		DB->ModifyItemStorageInfo(res);
+		return true;
+	}
+	catch (HarmoneyException ex) {
+		lastErrorInfo = ex.GetExceptionMessage();
+		return 0;
+	}
+}
+
+EXPORT int __stdcall HOS_DB_ModifyItem(const char* productId, const char* productName, int productType, double cost, double price,int countRest, double weightRest) {
+	try {
+		auto res = DB->QueryItemStorageInfo(productId);
+		res.Item.ItemName = productName;
+		res.Item.Cost = cost;
+		res.Item.ItemType = productType;
+		res.Item.Price = price;
+		res.CountRest = countRest;
+		res.WeightRest = weightRest;
+		res.Timestamp = time(0);
+		DB->ModifyItemStorageInfo(res);
+		return true;
+	}
+	catch (HarmoneyException ex) {
+		lastErrorInfo = ex.GetExceptionMessage();
+		return 0;
+	}
+}
+
+EXPORT int __stdcall HOS_DB_AddItem(const char* productId, const char* productName, int productType, double cost, double price, int countRest, double weightRest) {
+	try {
+		CItemStorageInfo cur;
+		cur.IsDelete = false;
+		cur.Item.ItemId = productId;
+		cur.Item.ItemName = productName;
+		cur.Item.Cost = cost;
+		cur.Item.ItemType = productType;
+		cur.Item.Price = price;
+		cur.CountRest = countRest;
+		cur.WeightRest = weightRest;
+		cur.Timestamp = time(0);
+		DB->AddItemStorageInfo(cur);
+		return true;
+	}
+	catch (HarmoneyException ex) {
+		lastErrorInfo = ex.GetExceptionMessage();
+		return 0;
+	}
+}

@@ -20,3 +20,9 @@ EXPORTS
 	HOS_Mm_DeleteMem
 	HOS_DB_QueryProduct
 	HOS_DBG_LoadExampleProducts
+	HOS_DB_GetItemCountRest
+	HOS_DB_GetItemWeightRest
+	HOS_DB_SetItemCountRest
+	HOS_DB_SetItemWeightRest
+	HOS_DB_ModifyItem
+	HOS_DB_AddItem
