@@ -26,3 +26,6 @@ EXPORTS
 	HOS_DB_SetItemWeightRest
 	HOS_DB_ModifyItem
 	HOS_DB_AddItem
+	HOS_IM_ShowPurchaseRecord
+	HOS_IM_CreateMonthlyFinancialStatement
+	HOS_IM_ShowAllItemRecord

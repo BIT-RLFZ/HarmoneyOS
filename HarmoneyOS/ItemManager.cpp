@@ -11,8 +11,10 @@
 #include <iostream>
 #include <algorithm>
 
-ItemManager* itemMgr = new ItemManager(); // ç»™å…¨å±€ç”¨
-//æ—¶é—´æˆ³ï¼ˆåŒ—äº¬æ—¶é—´ï¼‰
+#include <Windows.h>
+
+ItemManager* itemMgr = new ItemManager(); // ¸øÈ«¾ÖÓÃ
+//Ê±¼ä´Á£¨±±¾©Ê±¼ä£©
 
 using namespace std;
 
@@ -21,7 +23,7 @@ int stamp_to_standard(int stampTime) {
 	struct tm tm;
 	char s[100];
 	localtime_s(&tm, &tick);
-	strftime(s, sizeof(s), "%Y-%m-%d %H:%M:%S", &tm);//å…¶ä¸­sæ˜¯ä¸€ä¸ªå­—ç¬¦ä¸²ï¼Œè¡¨ç¤ºç€æ—¶é—´æˆ³è½¬æ¢è¿‡æ¥çš„çœŸå®žæ—¶é—´
+	strftime(s, sizeof(s), "%Y-%m-%d %H:%M:%S", &tm);//ÆäÖÐsÊÇÒ»¸ö×Ö·û´®£¬±íÊ¾×ÅÊ±¼ä´Á×ª»»¹ýÀ´µÄÕæÊµÊ±¼ä
 	//	printf("%s\n",  s);
 	int Y1 = 0, M1 = 0, D1 = 0;
 	Y1 += (s[0] - '0') * 1000;
@@ -30,19 +32,19 @@ int stamp_to_standard(int stampTime) {
 	Y1 += (s[3] - '0') * 1;
 	M1 += (s[5] - '0') * 10;
 	M1 += (s[6] - '0') * 1;
-	int totMonth = (Y1 - 1970) * 12 + M1;//totMonthè¡¨ç¤ºæ—¶é—´æˆ³è½¬æ¢è¿‡æ¥ä¹‹åŽæ˜¯1970å¹´å¼€å§‹çš„æœ‰äº†å‡ ä¸ªæœˆï¼Œå…¶ä¸­1970å¹´1æœˆæ˜¯ç¬¬ä¸€ä¸ªæœˆã€‚
+	int totMonth = (Y1 - 1970) * 12 + M1;//totMonth±íÊ¾Ê±¼ä´Á×ª»»¹ýÀ´Ö®ºóÊÇ1970Äê¿ªÊ¼µÄÓÐÁË¼¸¸öÔÂ£¬ÆäÖÐ1970Äê1ÔÂÊÇµÚÒ»¸öÔÂ¡£
 	return totMonth;
 }
 
-int ItemManager::TimestampConvertToMonthNumber(const int& Timestamp) {//æ—¶é—´æˆ³è½¬æ¢æˆç¬¬å‡ ä¸ªæœˆ
-	return stamp_to_standard(Timestamp);//è¿™é‡Œè°ƒç”¨äº†æ—¶é—´æˆ³è½¬æ¢æˆçœŸå®žæ—¥æœŸï¼Œå¹¶è¿”å›žæ˜¯ç¬¬å‡ ä¸ªæœˆ
-}//ä»ŠåŽå¦‚æžœæƒ³æ¢æˆå¹´åº¦ç»Ÿè®¡çš„è¯ï¼Œå¯ä»¥ç›´æŽ¥æŠŠæœˆä»½-1é™¤ä»¥12ç„¶åŽåŠ 1å˜æˆç¬¬å‡ å¹´ï¼Œç¬¬ä¸€å¹´æ˜¯ç¬¬ä¸€å¹´ï¼ˆä¸æ˜¯ç¬¬é›¶å¹´ï¼‰
-Timeacc ItemManager::TimestampConvertToYearAndSeason(const int& Timestamp) {//ç»“æž„ä½“çš„Timeaccç±»åž‹è¿”å›žäº†å¯¹åº”æ—¶é—´æˆ³çš„å¹´ä»½åŠ å­£åº¦
+int ItemManager::TimestampConvertToMonthNumber(const int& Timestamp) {//Ê±¼ä´Á×ª»»³ÉµÚ¼¸¸öÔÂ
+	return stamp_to_standard(Timestamp);//ÕâÀïµ÷ÓÃÁËÊ±¼ä´Á×ª»»³ÉÕæÊµÈÕÆÚ£¬²¢·µ»ØÊÇµÚ¼¸¸öÔÂ
+}//½ñºóÈç¹ûÏë»»³ÉÄê¶ÈÍ³¼ÆµÄ»°£¬¿ÉÒÔÖ±½Ó°ÑÔÂ·Ý-1³ýÒÔ12È»ºó¼Ó1±ä³ÉµÚ¼¸Äê£¬µÚÒ»ÄêÊÇµÚÒ»Äê£¨²»ÊÇµÚÁãÄê£©
+Timeacc ItemManager::TimestampConvertToYearAndSeason(const int& Timestamp) {//½á¹¹ÌåµÄTimeaccÀàÐÍ·µ»ØÁË¶ÔÓ¦Ê±¼ä´ÁµÄÄê·Ý¼Ó¼¾¶È
 	int totmonth = stamp_to_standard(Timestamp);
 	int year = (totmonth - 1) / 12;
 	int season = ((totmonth - year * 12) - 1) / 3;
 	Timeacc acc;
-	acc.year = year + 1970; acc.season = season + 1;//è¿”å›žçš„æ˜¯çœŸå®žçš„å¯¹åº”å¹´ä»½å’Œå­£åº¦ï¼Œæ¯”å¦‚123æœˆæ˜¯1å­£åº¦ï¼›
+	acc.year = year + 1970; acc.season = season + 1;//·µ»ØµÄÊÇÕæÊµµÄ¶ÔÓ¦Äê·ÝºÍ¼¾¶È£¬±ÈÈç123ÔÂÊÇ1¼¾¶È£»
 	return acc;
 }
 bool ItemManager::AddItem(CItemStorageInfo NewItem) {
@@ -69,11 +71,13 @@ bool comp_timeorder(const SingleOrder& a, const SingleOrder& b) {
 }
 SingleOrder NullOrder;
 void ItemManager::Prework() {
+	int mv = 998244353;
 	MaxId = 0; MaxMonth = 0;
 	ItemList = DB->GetAllPurchaseItemRecord();
 	Goods = DB->GetAllItemStorageInfo();
 	for (auto t : ItemList)
 		MaxId = max(MaxId, t.OrderId);
+	Orders.clear();
 	for (int i = 0; i <= MaxId; ++i)
 		Orders.push_back(NullOrder);
 	for (CPurchaseItemRecord t : ItemList) {
@@ -88,6 +92,11 @@ void ItemManager::Prework() {
 		}
 		Orders[i].OrderId = i;
 		Orders[i].WhichMonth = TimestampConvertToMonthNumber(t.Timestamp);
+		mv = min(mv, Orders[i].WhichMonth);
+	}
+	mv--;
+	for (int i = 1; i <= MaxId; ++i) {
+		Orders[i].WhichMonth -= mv; 
 		MaxMonth = max(ItemManager::TotalMonthCount, Orders[i].WhichMonth);
 	}
 	for (int m, i = 1; i <= MaxId; ++i) {
@@ -104,27 +113,51 @@ void ItemManager::Prework() {
 	return;
 }
 
+string buff = "";
+
+void clearBuf() {
+	buff.clear();
+}
+
+string getBuff() {
+	return buff;
+}
+
+ULONG myprintf(const char* fmt, ...) {
+	ULONG cnt = 0;
+	static char buf[3000] = { 0 };
+	va_list argptr;
+	va_start(argptr, fmt);
+	cnt = vsprintf_s(buf, 3000, fmt, argptr);
+	va_end(argptr);
+	buff += buf;
+	return cnt;
+}
+
+// ¹ºÂòÐÅÏ¢
 bool ItemManager::ShowPurchaseRecord() {
 	Prework();
 	sort(Orders.begin() + 1, Orders.end(), comp_timeorder);
-	printf("Below is the information of all orders so far\n");
+	myprintf("Below is the information of all orders so far\n");
 	for (int i = 1; i <= MaxId; ++i) {
-		printf("%d æœˆ è®¢å•ç¼–å·ï¼š %d è¯¥è®¢å•å…±æ¶ˆè´¹ï¼š %lf è¯¥è®¢å•å…±ç‰Ÿåˆ©ï¼š %lf \n",
+		myprintf("%d ÔÂ ¶©µ¥±àºÅ£º %d ¸Ã¶©µ¥¹²Ïû·Ñ£º %lf ¸Ã¶©µ¥¹²Ä²Àû£º %lf \n",
 			Orders[i].WhichMonth, Orders[i].OrderId,
 			Orders[i].OrderCost, Orders[i].OrderProfit);
 	}
 	return 0;
 }
+// ËùÓÐÉÌÆ·ÐÅÏ¢
 bool ItemManager::ShowAllItemRecord() {
-	int n = Goods.size(); //é¸½äº†é¸½äº†
+	Prework();
+	int n = Goods.size(); //¸ëÁË¸ëÁË
 	for (int i = 0; i < n; ++i) {
 		if (Goods[i].IsDelete) continue;
-		printf("ç‰©å“ç¼–å·ï¼š "); cout << Goods[i].Item.ItemId;
-		printf(" ç‰©å“åç§°ï¼š "); cout << Goods[i].Item.ItemName;
-		printf("è¯¥ç‰©å“è¿›ä»·ä¸º %lf å…ƒï¼Œå”®ä»·ä¸º %lf å…ƒï¼Œå‡€åˆ©æ¶¦ä¸º %lf å…ƒ ",
+		myprintf("ÎïÆ·±àºÅ£º %s  ", Goods[i].Item.ItemId.c_str());
+		myprintf(" ÎïÆ·Ãû³Æ£º %s  ", Goods[i].Item.ItemName.c_str());
+		myprintf("¸ÃÎïÆ·½ø¼ÛÎª %lf Ôª£¬ÊÛ¼ÛÎª %lf Ôª£¬¾»ÀûÈóÎª %lf Ôª ",
 			Goods[i].Item.Cost, Goods[i].Item.Price, Goods[i].Item.Price - Goods[i].Item.Cost);
-		if (Goods[i].Item.ItemType) printf("è¯¥ç‰©å“ä»¥å•ä¸ªå½¢å¼å”®å–, å‰©ä½™ %d ä¸ª\n", Goods[i].CountRest);
-		else printf("è¯¥ç‰©å“ä»¥æ•£è£…ç§°é‡å½¢å¼å”®å–, å‰©ä½™ %lf æ–¤\n", Goods[i].WeightRest);
+		if (Goods[i].Item.ItemType) myprintf("¸ÃÎïÆ·ÒÔµ¥¸öÐÎÊ½ÊÛÂô, Ê£Óà %d ¸ö\n", Goods[i].CountRest);
+		else myprintf("¸ÃÎïÆ·ÒÔÉ¢×°³ÆÖØÐÎÊ½ÊÛÂô, Ê£Óà %lf ½ï\n", Goods[i].WeightRest);
 	}
 	return 0;
 }
@@ -132,6 +165,8 @@ OrderYouWannaKnow ItemManager::MonthCheck(int x) { return MonthlyList[x]; }
 void ItemManager::GetRate() {
 	MonthlyRate[1] = make_pair(1.0, 1.0);
 	for (int i = 2; i <= MaxMonth; ++i) {
+		if (MonthlyList[i - 1].MaxCost.OrderCost == 0.0) continue;
+		if (MonthlyList[i - 1].MaxProfit.OrderProfit == 0.0) continue;
 		MonthlyRate[i].first = (MonthlyList[i].MaxCost.OrderCost
 			/ MonthlyList[i - 1].MaxCost.OrderCost) - 1.0;
 		MonthlyRate[i].second = (MonthlyList[i].MaxProfit.OrderProfit
@@ -139,15 +174,16 @@ void ItemManager::GetRate() {
 	}
 	return;
 }
+// ÒÔÔÂÎªµ¥Î»µÄÏúÊÛÐÅÏ¢Í³¼Æ
 bool ItemManager::CreateMonthlyFinancialStatement() {
 	Prework();
 	GetRate();
 	for (int i = 2; i <= MaxMonth; ++i) {
-		printf("---------------------------------------------------------------");
-		printf("&è¿™æ˜¯äººç±»çºªå…ƒçš„ç¬¬ %d ä¸ªæœˆï¼Œä»¥ä¸‹ä¸ºæœ¬æœˆçš„ç›¸å…³ç»Ÿè®¡ä¿¡æ¯\n", i);
-		printf(" æœ¬æœˆè®¢å•æ€»æ•°.ä¸º %dï¼Œæ€»é”€å”®é¢ä¸º %lf å…ƒï¼Œæ€»åˆ©æ¶¦ä¸º %lf å…ƒ\n", MonthlyList[i].OrderAmount, MonthlyList[i].CostAmount, MonthlyList[i].ProfitAmount);
-		printf(" æœ¬æœˆæœ€å¤§åˆ©æ¶¦çš„è®¢å•ä¸ºç¼–å· %d çš„è®¢å•ï¼Œæœ€å¤§åˆ©æ¶¦ä¸º %lf å…ƒï¼Œä¸ŠæœˆåŒæ¯”å¢žé•¿ %lf %%\n", MonthlyList[i].MaxProfit.OrderId, MonthlyList[i].MaxProfit.OrderProfit, MonthlyRate[i].second);
-		printf(" æœ¬æœˆæœ€å¤§æ¶ˆè´¹çš„è®¢å•ä¸ºç¼–å· %d çš„è®¢å•ï¼Œæœ€å¤§æ¶ˆè´¹ä¸º %lf å…ƒï¼Œä¸ŠæœˆåŒæ¯”å¢žé•¿ %lf %%\n", MonthlyList[i].MaxCost.OrderId, MonthlyList[i].MaxCost.OrderCost, MonthlyRate[i].first);
+		myprintf("---------------------------------------------------------------");
+		myprintf("&ÕâÊÇÈËÀà¼ÍÔªµÄµÚ %d ¸öÔÂ£¬ÒÔÏÂÎª±¾ÔÂµÄÏà¹ØÍ³¼ÆÐÅÏ¢\n", i);
+		myprintf(" ±¾ÔÂ¶©µ¥×ÜÊý.Îª %d£¬×ÜÏúÊÛ¶îÎª %lf Ôª£¬×ÜÀûÈóÎª %lf Ôª\n", MonthlyList[i].OrderAmount, MonthlyList[i].CostAmount, MonthlyList[i].ProfitAmount);
+		myprintf(" ±¾ÔÂ×î´óÀûÈóµÄ¶©µ¥Îª±àºÅ %d µÄ¶©µ¥£¬×î´óÀûÈóÎª %lf Ôª£¬ÉÏÔÂÍ¬±ÈÔö³¤ %lf %%\n", MonthlyList[i].MaxProfit.OrderId, MonthlyList[i].MaxProfit.OrderProfit, MonthlyRate[i].second);
+		myprintf(" ±¾ÔÂ×î´óÏû·ÑµÄ¶©µ¥Îª±àºÅ %d µÄ¶©µ¥£¬×î´óÏû·ÑÎª %lf Ôª£¬ÉÏÔÂÍ¬±ÈÔö³¤ %lf %%\n", MonthlyList[i].MaxCost.OrderId, MonthlyList[i].MaxCost.OrderCost, MonthlyRate[i].first);
 	}
 	return 0;
 }

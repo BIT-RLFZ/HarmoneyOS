@@ -376,3 +376,49 @@ EXPORT int __stdcall HOS_DB_AddItem(const char* productId, const char* productNa
 		return 0;
 	}
 }
+
+string getBuff();
+void clearBuf();
+
+
+EXPORT const char* __stdcall HOS_IM_ShowAllItemRecord() {
+	try {
+		clearBuf();
+		itemMgr->ShowAllItemRecord();
+		char* fuck = new char[getBuff().size() + 1];
+		memcpy_s(fuck, getBuff().size() + 1, getBuff().c_str(), getBuff().size() + 1);
+		return fuck;
+	}
+	catch (HarmoneyException ex) {
+		lastErrorInfo = ex.GetExceptionMessage();
+		return 0;
+	}
+}
+
+EXPORT const char* __stdcall HOS_IM_CreateMonthlyFinancialStatement() {
+	try {
+		clearBuf();
+		itemMgr->CreateMonthlyFinancialStatement();
+		char* fuck = new char[getBuff().size() + 1];
+		memcpy_s(fuck, getBuff().size() + 1, getBuff().c_str(), getBuff().size() + 1);
+		return fuck;
+	}
+	catch (HarmoneyException ex) {
+		lastErrorInfo = ex.GetExceptionMessage();
+		return 0;
+	}
+}
+
+EXPORT const char* __stdcall HOS_IM_ShowPurchaseRecord() {
+	try {
+		clearBuf();
+		itemMgr->ShowPurchaseRecord();
+		char* fuck = new char[getBuff().size() + 1];
+		memcpy_s(fuck, getBuff().size() + 1, getBuff().c_str(), getBuff().size() + 1);
+		return fuck;
+	}
+	catch (HarmoneyException ex) {
+		lastErrorInfo = ex.GetExceptionMessage();
+		return 0;
+	}
+}
